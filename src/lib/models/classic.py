@@ -1,27 +1,30 @@
-import torch
-from torch import nn
+from torch import nn, randn
 from torch import Tensor
 
+from lib.models import base_model
 
-class ClassicModel(nn.Module):
+
+class ClassicModel(base_model.BaseModel):
     """
     A neural network (layer) as simple as possible.
     """
 
-    def __init__(self, input_size: int, output_size: int) -> None:
+    def __init__(self, input_size: int, output_size: int, device: str) -> None:
         """
         Creates the neural network layer, with the sizes indicated.
         """
 
-        super().__init__()
+        super().__init__(device)
         assert input_size > 0
         assert output_size > 0
         self.input_size = input_size
         self.output_size = output_size
 
-        self.biases = nn.Parameter(torch.randn(output_size), requires_grad=True)
+        self.biases = nn.Parameter(
+            randn(output_size, device=device), requires_grad=True
+        )
         self.weights = nn.Parameter(
-            torch.randn([input_size, output_size]), requires_grad=True
+            randn([input_size, output_size], device=device), requires_grad=True
         )
 
     def forward(self, x: Tensor) -> Tensor:
