@@ -44,11 +44,16 @@ def train(
     out_test: Tensor,
     epochs: int = 1,
 ):
+    assert epochs > 0
     fn_loss = nn.L1Loss()
     fn_opti = optim.SGD(model.parameters())
 
     in_training.to(model.device_str)
+    out_training.to(model.device_str)
+    in_test.to(model.device_str)
+    out_test.to(model.device_str)
 
+    te_loss = 0
     for i in range(epochs):
         model.train()
         tr_loss = train_step(model, in_training, out_training, fn_loss, fn_opti)
@@ -56,3 +61,5 @@ def train(
             model.eval()
             te_loss = testing(model, in_test, out_test, fn_loss)
             print(f"Epoch {i} with tr {tr_loss} and te {te_loss}")
+
+    return te_loss
