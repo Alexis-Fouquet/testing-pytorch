@@ -47,6 +47,7 @@
               gcc
               uv
               cclib
+              ruff
             ];
         }
       );
