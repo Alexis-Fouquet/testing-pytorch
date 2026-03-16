@@ -48,10 +48,10 @@ def train(
     fn_loss = nn.L1Loss()
     fn_opti = optim.SGD(model.parameters())
 
-    in_training.to(model.device_str)
-    out_training.to(model.device_str)
-    in_test.to(model.device_str)
-    out_test.to(model.device_str)
+    in_training = in_training.to(model.device_str)
+    out_training = out_training.to(model.device_str)
+    in_test = in_test.to(model.device_str)
+    out_test = out_test.to(model.device_str)
 
     te_loss = 0
     for i in range(epochs):
