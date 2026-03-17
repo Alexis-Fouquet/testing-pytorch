@@ -16,6 +16,10 @@ def seed(seed: int = 42):
 def testing(model: nn.Module, in_test: Tensor, out_test: Tensor, fn_loss: _Loss):
     with inference_mode():
         out_model = model(in_test).squeeze()
+        assert out_model.size() == out_test.size(), (
+            out_model.size(),
+            out_test.size(),
+        )
         loss = fn_loss(out_model, out_test)
         return loss
 
@@ -28,6 +32,10 @@ def train_step(
     fn_opti: Optimizer,
 ):
     out_model = model(in_training).squeeze()
+    assert out_model.size() == out_training.size(), (
+        out_model.size(),
+        out_training.size(),
+    )
     loss = fn_loss(out_model, out_training)
     fn_opti.zero_grad()
     # Much easier than in C
@@ -52,6 +60,14 @@ def train(
     out_training = out_training.to(model.device_str)
     in_test = in_test.to(model.device_str)
     out_test = out_test.to(model.device_str)
+    assert len(in_training.size()) == len(in_test.size()), (
+        in_training.size(),
+        in_test.size(),
+    )
+    assert len(out_training.size()) == len(out_test.size()), (
+        out_training.size(),
+        out_test.size(),
+    )
 
     te_loss = 0
     for i in range(epochs):

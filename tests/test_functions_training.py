@@ -23,8 +23,7 @@ def test_noise_linear_200():
 
 
 def test_noise_linear_400():
-    # 1500 is a lot, just back luck
-    assert 0 < linear_classic_noised(1500).loss < 0.21
+    assert 0 < linear_classic_noised(1500).loss < 0.11
 
 
 def test_mean_1():
@@ -36,5 +35,4 @@ def test_mean_200():
 
 
 def test_mean_linear_400():
-    # 1500 is a lot, just back luck
-    assert 0 < mean_value(1500).loss < 0.21
+    assert 0 < mean_value(1600).loss < 0.12

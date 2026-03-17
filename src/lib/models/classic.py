@@ -24,8 +24,12 @@ class ClassicModel(base_model.BaseModel):
             randn(output_size, device=device), requires_grad=True
         )
         self.weights = nn.Parameter(
-            randn([input_size, output_size], device=device), requires_grad=True
+            randn([output_size, input_size], device=device), requires_grad=True
         )
 
     def forward(self, x: Tensor) -> Tensor:
-        return self.weights * x + self.biases
+        if len(x.size()) > 2:
+            x = x.squeeze()
+        if len(x.size()) < 2:
+            x = x.unsqueeze(dim=0)
+        return self.weights @ x + self.biases

@@ -64,7 +64,10 @@ def mean_value(epochs: int = 1):
     part_sep = (int)(points * part)
     in_training, in_test = x[:, :part_sep], x[:, part_sep:]
     out_training, out_test = y[:part_sep], y[part_sep:]
-    assert in_training.size() == Size([2, part_sep]), (in_training.size(), [2, part_sep])
+    assert in_training.size() == Size([2, part_sep]), (
+        in_training.size(),
+        [2, part_sep],
+    )
     assert out_training.size() == Size([part_sep]), (in_training.size(), [part_sep])
 
     model = ClassicModel(2, 1, global_device)
