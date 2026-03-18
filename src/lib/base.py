@@ -13,14 +13,22 @@ def seed(seed: int = 42):
     manual_seed(seed)
 
 
-def testing(model: nn.Module, in_test: Tensor, out_test: Tensor, fn_loss: _Loss):
+def testing(
+    model: BaseModel,
+    in_test: Tensor,
+    out_test: Tensor,
+    fn_loss: _Loss,
+    epoch: int,
+    tr_loss: float = 0,
+):
     with inference_mode():
-        out_model = model(in_test).squeeze()
+        out_model = model(in_test)
         assert out_model.size() == out_test.size(), (
             out_model.size(),
             out_test.size(),
         )
         loss = fn_loss(out_model, out_test)
+        model.print_epoch(out_test, out_model, tr_loss, loss, epoch)
         return loss
 
 
@@ -31,7 +39,7 @@ def train_step(
     fn_loss: _Loss,
     fn_opti: Optimizer,
 ):
-    out_model = model(in_training).squeeze()
+    out_model = model(in_training)
     assert out_model.size() == out_training.size(), (
         out_model.size(),
         out_training.size(),
@@ -53,8 +61,8 @@ def train(
     epochs: int = 1,
 ):
     assert epochs > 0, epochs
-    fn_loss = nn.L1Loss()
-    fn_opti = optim.SGD(model.parameters())
+    fn_loss = model.fn_loss
+    fn_opti = optim.SGD(model.parameters(), lr=0.07)
 
     in_training = in_training.to(model.device_str)
     out_training = out_training.to(model.device_str)
@@ -75,12 +83,10 @@ def train(
         tr_loss = train_step(model, in_training, out_training, fn_loss, fn_opti)
         if i % 10 == 0:
             model.eval()
-            te_loss = testing(model, in_test, out_test, fn_loss)
-            print(f"Epoch {i} with tr {tr_loss} and te {te_loss}")
+            te_loss = testing(model, in_test, out_test, fn_loss, i, tr_loss=tr_loss)
 
     if (epochs - 1) % 10 != 0:
         model.eval()
-        te_loss = testing(model, in_test, out_test, fn_loss)
-        print(f"Epoch {epochs} with te {te_loss}")
+        te_loss = testing(model, in_test, out_test, fn_loss, epochs)
 
     return te_loss
