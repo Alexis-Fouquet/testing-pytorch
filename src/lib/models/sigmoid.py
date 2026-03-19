@@ -34,4 +34,6 @@ class SigmoidModel(BaseModel):
     ):
         out = (out >= 0.5).float()
         accu = round((out == truth).float().mean() * 10000) / 100
-        print(f"Epoch {epoch} with tr {loss_tr} and te {loss_te} -- Acc {accu}% of {truth.shape}")
+        print(
+            f"Epoch {epoch} with tr {loss_tr} and te {loss_te} -- Acc {accu}% of {truth.shape}"
+        )

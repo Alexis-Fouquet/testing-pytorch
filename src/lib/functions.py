@@ -1,19 +1,19 @@
-from torch import Size, rand, randn
+from torch import Size, maximum, rand, randn
 
 from lib.models.classic import ClassicModel
 from lib.base import global_device, train
 from lib.training_result import TrainingResult
+from lib.utils.linear_generator import LinearGenerator, add_noise
 
 
 def linear_classic(epochs: int = 1) -> TrainingResult:
     # Inspired from online examples
-    init = 0.7
-    direction = -0.05
+    lin = LinearGenerator(0.7, -0.05)
     points = 500
     part = 0.75
 
     x = (rand([points, 1]) + 1) / 2
-    y = x * direction + init
+    y = lin.generate(x)
     assert x.size() == Size([points, 1]), x.size()
     assert y.size() == Size([points, 1]), y.size()
 
@@ -31,20 +31,19 @@ def linear_classic_noised(epochs: int = 1):
     Calculate a linear function with noise.
     """
 
-    init = 0.2
-    direction = 0.03
+    lin = LinearGenerator(0.2, 0.03)
     points = 500
     part = 0.75
-    noise = 0.001
 
     x = (rand([points, 1]) + 1) / 2
-    y = x * direction + init + randn([points, 1]) * noise
     assert x.size() == Size([points, 1]), x.size()
-    assert y.size() == Size([points, 1]), y.size()
 
     part_sep = (int)(points * part)
     in_training, in_test = x[:part_sep, :], x[part_sep:, :]
-    out_training, out_test = y[:part_sep, :], y[part_sep:, :]
+    # Do not noise the test dataset as we want a linear output
+    out_training, out_test = lin.generate(in_training, noise=0.001), lin.generate(in_test)
+    assert out_training.size() == in_training.size(), out_training.size()
+    assert out_test.size() == in_test.size(), out_test.size()
 
     model = ClassicModel(1, 1, global_device)
     loss = train(model, in_training, out_training, in_test, out_test, epochs=epochs)
@@ -77,13 +76,36 @@ def mean_value(epochs: int = 1):
     assert out_training.size() == Size([part_sep, 1]), (in_training.size(), [part_sep])
 
     model = ClassicModel(2, 1, global_device)
-    loss = train(model, in_training, out_training, in_test, out_test, epochs=epochs, lr=0.1)
+    loss = train(
+        model, in_training, out_training, in_test, out_test, epochs=epochs, lr=0.1
+    )
     return TrainingResult(model, loss)
 
 
-def almost_linear():
-    # Needs multiple layers
-    pass
+def almost_linear(epochs: int = 1):
+    """
+    The max between two linear functions.
+    """
+
+    lin1 = LinearGenerator(0.2, 0.3)
+    lin2 = LinearGenerator(-0.2, 0.7)
+    points = 500
+    part = 0.75
+
+    x = (rand([points, 1]) + 1) / 2
+    y = maximum(lin1.generate(x), lin2.generate(x))
+    assert x.size() == Size([points, 1]), x.size()
+    assert y.size() == Size([points, 1]), y.size()
+
+    part_sep = (int)(points * part)
+    in_training, in_test = x[:part_sep, :], x[part_sep:, :]
+
+    # Do not noise the test dataset as we want a linear output
+    out_training, out_test = add_noise(y[:part_sep, :], 0.001), y[part_sep:, :]
+
+    model = ClassicModel(1, 1, global_device)
+    loss = train(model, in_training, out_training, in_test, out_test, epochs=epochs, lr=0.05)
+    return TrainingResult(model, loss)
 
 
 def other_v1():
