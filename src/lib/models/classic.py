@@ -31,7 +31,7 @@ class ClassicModel(base_model.BaseModel):
         return x @ self.weights + self.biases
 
     def print_epoch(
-        self, truth: Tensor, out: Tensor, loss_tr: float, loss_te: float, epoch: int
+        self, truth: Tensor, out: Tensor, loss_tr: Tensor, loss_te: Tensor, epoch: int
     ):
         out = out
         truth = truth

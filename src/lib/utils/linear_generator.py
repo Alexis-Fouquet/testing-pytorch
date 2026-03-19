@@ -1,9 +1,9 @@
-from torch import Size, randn
+from torch import randn
 from torch._prims_common import Tensor
 
 
 def add_noise(y: Tensor, noise: float = 0):
-    return randn(y.shape) * noise
+    return y + randn(y.shape) * noise
 
 
 class LinearGenerator:
@@ -14,4 +14,3 @@ class LinearGenerator:
     def generate(self, x: Tensor, noise: float = 0) -> Tensor:
         y = add_noise(x * self.coef + self.init, noise)
         return y
-

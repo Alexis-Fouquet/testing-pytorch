@@ -1,8 +1,8 @@
 from torch import Size, bernoulli, ones
 
-from lib.base import global_device, train
+from lib.device import global_device
+from lib.base import train
 from lib.models.sigmoid import SigmoidModel
-from lib.training_result import TrainingResult
 
 
 def gates_and_2(epochs: int = 1):
@@ -32,10 +32,9 @@ def gates_and_2(epochs: int = 1):
     )
 
     model = SigmoidModel(2, 1, global_device)
-    loss = train(
+    return train(
         model, in_training, out_training, in_test, out_test, epochs=epochs, lr=0.4
     )
-    return TrainingResult(model, loss)
 
 
 def gates_and_5(epochs: int = 1):
@@ -65,10 +64,9 @@ def gates_and_5(epochs: int = 1):
     )
 
     model = SigmoidModel(5, 1, global_device)
-    loss = train(
+    return train(
         model, in_training, out_training, in_test, out_test, epochs=epochs, lr=0.4
     )
-    return TrainingResult(model, loss)
 
 
 def gates_or_5(epochs: int = 1):
@@ -98,10 +96,9 @@ def gates_or_5(epochs: int = 1):
     )
 
     model = SigmoidModel(5, 1, global_device)
-    loss = train(
+    return train(
         model, in_training, out_training, in_test, out_test, epochs=epochs, lr=0.4
     )
-    return TrainingResult(model, loss)
 
 
 def gates_complex_v1(epochs: int = 1):
@@ -131,10 +128,9 @@ def gates_complex_v1(epochs: int = 1):
     )
 
     model = SigmoidModel(5, 1, global_device)
-    loss = train(
+    return train(
         model, in_training, out_training, in_test, out_test, epochs=epochs, lr=0.4
     )
-    return TrainingResult(model, loss)
 
 
 def gates_complex_v2():

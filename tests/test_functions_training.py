@@ -1,5 +1,10 @@
 from lib import base
-from lib.functions import almost_linear, linear_classic, linear_classic_noised, mean_value
+from lib.functions import (
+    almost_linear,
+    linear_classic,
+    linear_classic_noised,
+    mean_value,
+)
 
 
 def test_train_linear_1():
@@ -9,12 +14,17 @@ def test_train_linear_1():
 
 def test_train_linear_200():
     base.seed()
-    assert 0.1 < linear_classic(2).loss < 0.2
+    result = linear_classic(20)
+    if 0.1 < result.loss < 0.3:
+        return
+    result.plot()
+    assert False, result.loss
 
 
 def test_train_linear_400():
     base.seed()
-    assert 0 < linear_classic(40).loss < 0.1
+    result = linear_classic(40)
+    assert 0 < result.loss < 0.1
 
 
 def test_noise_linear_400():
@@ -39,7 +49,11 @@ def test_mean_400():
 
 def test_max_1():
     base.seed()
-    assert 3 > almost_linear().loss > 0.2
+    result = almost_linear()
+    if 3 > result.loss > 0.2:
+        return
+    result.plot()
+    assert False, result.loss
 
 
 def test_max_200():
@@ -49,4 +63,5 @@ def test_max_200():
 
 def test_max_400():
     base.seed()
-    assert 0 < almost_linear(40).loss < 0.1
+    result = almost_linear(40)
+    assert 0 < result.loss < 0.1

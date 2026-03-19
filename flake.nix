@@ -48,6 +48,7 @@
               uv
               cclib
               ruff
+              python3Packages.pyqt6
             ];
         }
       );

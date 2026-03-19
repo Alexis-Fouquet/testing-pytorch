@@ -16,6 +16,6 @@ class BaseModel(nn.Module):
 
     @abstractmethod
     def print_epoch(
-        self, truth: Tensor, out: Tensor, loss_tr: float, loss_te: float, epoch: int
+        self, truth: Tensor, out: Tensor, loss_tr: Tensor, loss_te: Tensor, epoch: int
     ):
         pass

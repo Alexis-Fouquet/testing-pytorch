@@ -1,11 +1,9 @@
-from torch import Tensor, cuda, inference_mode, manual_seed, nn, optim
+from torch import Tensor, inference_mode, manual_seed, nn, optim
 from torch.nn.modules.loss import _Loss
 from torch.optim import Optimizer
 
 from lib.models.base_model import BaseModel
-
-
-global_device = "cuda" if cuda.is_available() else "cpu"
+from lib.training_result import TrainingResult
 
 
 def seed(seed: int = 42):
@@ -19,7 +17,7 @@ def testing(
     out_test: Tensor,
     fn_loss: _Loss,
     epoch: int,
-    tr_loss: float = 0,
+    tr_loss: Tensor,
 ):
     with inference_mode():
         out_model = model(in_test)
@@ -60,7 +58,7 @@ def train(
     out_test: Tensor,
     epochs: int = 1,
     lr: float = 0.07,
-):
+) -> TrainingResult:
     assert epochs > 0, epochs
     fn_loss = model.fn_loss
     fn_opti = optim.AdamW(model.parameters(), lr=lr)
@@ -78,17 +76,31 @@ def train(
         out_test.size(),
     )
 
-    te_loss = 0
-    tr_loss = 0
+    te_losses = []
+    tr_losses = []
+
+    te_loss = Tensor()
+    tr_loss = Tensor()
     for i in range(epochs):
         model.train()
         tr_loss = train_step(model, in_training, out_training, fn_loss, fn_opti)
+        tr_losses.append(tr_loss)
         if i % 10 == 0:
             model.eval()
             te_loss = testing(model, in_test, out_test, fn_loss, i, tr_loss=tr_loss)
+            te_losses.append(te_loss)
 
     if (epochs - 1) % 10 != 0:
         model.eval()
         testing(model, in_test, out_test, fn_loss, epochs, tr_loss=tr_loss)
 
-    return te_loss
+    return TrainingResult(
+        model,
+        te_loss,
+        training_losses=tr_losses,
+        test_losses=te_losses,
+        in_test=in_test,
+        out_test=out_test,
+        in_training=in_training,
+        out_training=out_training,
+    )
