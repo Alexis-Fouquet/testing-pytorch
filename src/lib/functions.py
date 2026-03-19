@@ -77,7 +77,7 @@ def mean_value(epochs: int = 1):
     assert out_training.size() == Size([part_sep, 1]), (in_training.size(), [part_sep])
 
     model = ClassicModel(2, 1, global_device)
-    loss = train(model, in_training, out_training, in_test, out_test, epochs=epochs)
+    loss = train(model, in_training, out_training, in_test, out_test, epochs=epochs, lr=0.1)
     return TrainingResult(model, loss)
 
 

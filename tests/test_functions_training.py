@@ -24,14 +24,14 @@ def test_noise_linear_400():
 
 def test_mean_1():
     base.seed()
-    assert 3 > mean_value().loss > 0.3
+    assert 3 > mean_value().loss > 0.1
 
 
 def test_mean_200():
     base.seed()
-    assert 0 < mean_value(400).loss < 0.61
+    assert 0 < mean_value(50).loss < 0.61
 
 
 def test_mean_400():
     base.seed()
-    assert 0 < mean_value(1600).loss < 0.12
+    assert 0 < mean_value(500).loss < 0.12

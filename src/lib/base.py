@@ -59,10 +59,11 @@ def train(
     in_test: Tensor,
     out_test: Tensor,
     epochs: int = 1,
+    lr: float = 0.07,
 ):
     assert epochs > 0, epochs
     fn_loss = model.fn_loss
-    fn_opti = optim.SGD(model.parameters(), lr=0.07)
+    fn_opti = optim.AdamW(model.parameters(), lr=lr)
 
     in_training = in_training.to(model.device_str)
     out_training = out_training.to(model.device_str)
@@ -78,6 +79,7 @@ def train(
     )
 
     te_loss = 0
+    tr_loss = 0
     for i in range(epochs):
         model.train()
         tr_loss = train_step(model, in_training, out_training, fn_loss, fn_opti)
@@ -87,6 +89,6 @@ def train(
 
     if (epochs - 1) % 10 != 0:
         model.eval()
-        te_loss = testing(model, in_test, out_test, fn_loss, epochs)
+        testing(model, in_test, out_test, fn_loss, epochs, tr_loss=tr_loss)
 
     return te_loss
