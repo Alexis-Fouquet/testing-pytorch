@@ -3,6 +3,8 @@ from torch import Size, maximum, rand, randn
 from lib.models.classic import ClassicModel
 from lib.base import train
 from lib.device import global_device
+from lib.models.sequential import SeqModel
+from lib.models.sigmoid import SigmoidModel
 from lib.training_result import TrainingResult
 from lib.utils.linear_generator import LinearGenerator, add_noise
 
@@ -104,7 +106,13 @@ def almost_linear(epochs: int = 1):
     # Do not noise the test dataset as we want a linear output
     out_training, out_test = add_noise(y[:part_sep, :], 0.001), y[part_sep:, :]
 
-    model = ClassicModel(1, 1, global_device)
+    model = SeqModel(
+        [
+            ClassicModel(1, 2, global_device),
+            SigmoidModel(2, 1, global_device),
+        ],
+        global_device,
+    )
     return train(
         model, in_training, out_training, in_test, out_test, epochs=epochs, lr=0.05
     )

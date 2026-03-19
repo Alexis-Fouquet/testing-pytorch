@@ -64,4 +64,7 @@ def test_max_200():
 def test_max_400():
     base.seed()
     result = almost_linear(40)
-    assert 0 < result.loss < 0.1
+    if 0 < result.loss < 0.1:
+        return
+    result.plot()
+    assert False, result.loss

@@ -2,7 +2,7 @@ from torch import nn
 from lib.models.base_model import BaseModel
 
 
-class SigmoidModel(BaseModel, nn.Sequential):
+class SeqModel(BaseModel, nn.Sequential):
     """
     A neural network (layer) with a sigmoid.
     """
@@ -13,4 +13,9 @@ class SigmoidModel(BaseModel, nn.Sequential):
         """
 
         BaseModel.__init__(self, device, models[0].fn_loss)
+        self.models = models
         nn.Sequential.__init__(self, *models)
+
+    @property
+    def fn_loss(self):
+        return self.models[0].fn_loss
