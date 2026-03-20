@@ -49,6 +49,7 @@
               cclib
               ruff
               python3Packages.pyqt6
+              python3Packages.tensorboard
             ];
         }
       );
