@@ -1,4 +1,4 @@
-from torch import Size, maximum, rand, randn
+from torch import Size, cos, maximum, minimum, pi, rand, randn
 
 from lib.models.classic import ClassicModel
 from lib.base import train
@@ -118,6 +118,102 @@ def almost_linear(epochs: int = 1):
     )
 
 
-def other_v1():
-    # Needs multiple layers
-    pass
+def min_linear(epochs: int = 1):
+    """
+    The min between two linear functions.
+    """
+
+    lin1 = LinearGenerator(0.9, 0.07)
+    lin2 = LinearGenerator(1.8, -1.8)
+    points = 500
+    part = 0.75
+
+    x = rand([points, 1])
+    y = minimum(lin1.generate(x), lin2.generate(x))
+    assert x.size() == Size([points, 1]), x.size()
+    assert y.size() == Size([points, 1]), y.size()
+
+    part_sep = (int)(points * part)
+    in_training, in_test = x[:part_sep, :], x[part_sep:, :]
+
+    # Do not noise the test dataset as we want a linear output
+    out_training, out_test = add_noise(y[:part_sep, :], 0.006), y[part_sep:, :]
+
+    model = SeqModel(
+        [
+            ClassicModel(1, 1, global_device),
+            SigmoidModel(1, 1, global_device),
+        ],
+        global_device,
+    )
+    return train(
+        model, in_training, out_training, in_test, out_test, epochs=epochs, lr=0.05
+    )
+
+
+def min_max_linear(epochs: int = 1):
+    """
+    The min between two linear functions.
+    """
+
+    lin1 = LinearGenerator(0.9, 0.07)
+    lin2 = LinearGenerator(1.4, -1.8)
+    lin3 = LinearGenerator(-1.0, 2.0)
+    points = 500
+    part = 0.75
+
+    x = rand([points, 1])
+    y = minimum(lin1.generate(x), maximum(lin2.generate(x), lin3.generate(x)))
+    assert x.size() == Size([points, 1]), x.size()
+    assert y.size() == Size([points, 1]), y.size()
+
+    part_sep = (int)(points * part)
+    in_training, in_test = x[:part_sep, :], x[part_sep:, :]
+
+    # Do not noise the test dataset as we want a linear output
+    out_training, out_test = add_noise(y[:part_sep, :], 0.002), y[part_sep:, :]
+
+    model = SeqModel(
+        [
+            ClassicModel(1, 2, global_device),
+            SigmoidModel(2, 2, global_device),
+            SigmoidModel(2, 1, global_device),
+        ],
+        global_device,
+    )
+    return train(
+        model, in_training, out_training, in_test, out_test, epochs=epochs, lr=0.05
+    )
+
+
+def cos_fct(epochs: int = 1):
+    points = 500
+    part = 0.75
+
+    x = rand([points, 1])
+    y = (cos(x * 2 * 2 * pi) + 1) / 2
+    assert x.size() == Size([points, 1]), x.size()
+    assert y.size() == Size([points, 1]), y.size()
+
+    part_sep = (int)(points * part)
+    in_training, in_test = x[:part_sep, :], x[part_sep:, :]
+
+    # Do not noise the test dataset as we want a linear output
+    out_training, out_test = add_noise(y[:part_sep, :], 0.002), y[part_sep:, :]
+
+    size = 15
+    last_size = 4
+    model = SeqModel(
+        [
+            ClassicModel(1, size, global_device),
+            SigmoidModel(size, size, global_device),
+            SigmoidModel(size, size, global_device),
+            SigmoidModel(size, size, global_device),
+            SigmoidModel(size, last_size, global_device),
+            SigmoidModel(last_size, 1, global_device),
+        ],
+        global_device,
+    )
+    return train(
+        model, in_training, out_training, in_test, out_test, epochs=epochs, lr=0.05
+    )

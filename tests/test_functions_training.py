@@ -1,9 +1,12 @@
 from lib import base
 from lib.functions import (
     almost_linear,
+    cos_fct,
     linear_classic,
     linear_classic_noised,
     mean_value,
+    min_linear,
+    min_max_linear,
 )
 
 
@@ -64,6 +67,87 @@ def test_max_200():
 def test_max_400():
     base.seed()
     result = almost_linear(40)
+    if 0 < result.loss < 0.1:
+        return
+    result.plot()
+    assert False, result.loss
+
+
+def test_min_1():
+    base.seed()
+    result = min_linear()
+    if 3 > result.loss > 0.2:
+        return
+    result.plot()
+    assert False, result.loss
+
+
+def test_min_200():
+    base.seed()
+    result = min_linear(40)
+    if 0.1 < result.loss < 0.25:
+        return
+    result.plot()
+    assert False, result.loss
+
+
+def test_min_400():
+    base.seed()
+    result = min_linear(80)
+    if 0 < result.loss < 0.1:
+        return
+    result.plot()
+    assert False, result.loss
+
+
+def test_min_max_1():
+    base.seed()
+    result = min_max_linear()
+    if 3 > result.loss > 0.2:
+        return
+    result.plot()
+    assert False, result.loss
+
+
+def test_min_max_200():
+    base.seed()
+    result = min_max_linear(40)
+    if 0.1 < result.loss < 0.25:
+        return
+    result.plot()
+    assert False, result.loss
+
+
+def test_min_max_400():
+    base.seed()
+    result = min_max_linear(250)
+    if 0 < result.loss < 0.1:
+        return
+    result.plot()
+    assert False, result.loss
+
+
+def test_cos_1():
+    base.seed()
+    result = cos_fct()
+    if 3 > result.loss > 0.2:
+        return
+    result.plot()
+    assert False, result.loss
+
+
+def test_cos_200():
+    base.seed()
+    result = cos_fct(40)
+    if 0.1 < result.loss < 0.25:
+        return
+    result.plot()
+    assert False, result.loss
+
+
+def test_cos_400():
+    base.seed()
+    result = cos_fct(200)
     if 0 < result.loss < 0.1:
         return
     result.plot()
