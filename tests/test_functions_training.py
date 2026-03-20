@@ -148,6 +148,7 @@ def test_cos_200():
 def test_cos_400():
     base.seed()
     result = cos_fct(200)
+    result.show()
     if 0 < result.loss < 0.1:
         return
     result.plot()

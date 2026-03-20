@@ -56,6 +56,7 @@ def train(
     out_training: Tensor,
     in_test: Tensor,
     out_test: Tensor,
+    name: str,
     epochs: int = 1,
     lr: float = 0.07,
 ) -> TrainingResult:
@@ -97,6 +98,7 @@ def train(
     return TrainingResult(
         model,
         te_loss,
+        name + "_" + str(epochs),
         training_losses=tr_losses,
         test_losses=te_losses,
         in_test=in_test,

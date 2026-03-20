@@ -1,6 +1,7 @@
 from torch import inference_mode
 from torch._prims_common import Tensor
 from lib.models.base_model import BaseModel
+from torch.utils.tensorboard import SummaryWriter
 from matplotlib.pyplot import ion, pause, subplots, show
 from matplotlib import use
 from lib.device import global_device
@@ -21,6 +22,7 @@ class TrainingResult:
         self,
         model: BaseModel,
         loss: Tensor,
+        name: str,
         training_losses: list[Tensor] = list(),
         test_losses: list[Tensor] = list(),
         in_training: Tensor | None = None,
@@ -28,6 +30,7 @@ class TrainingResult:
         out_training: Tensor | None = None,
         out_test: Tensor | None = None,
     ) -> None:
+        self.name = name
         self.model = model
         self.loss = loss
         self.training_losses = list_to_float(training_losses)
@@ -37,11 +40,24 @@ class TrainingResult:
         self.out_training = to_cpu(out_training)
         self.out_test = to_cpu(out_test)
 
-    def plot(self):
-        use("QtAgg")
-        ion()
+    def show(self):
+        writer = SummaryWriter()
+        for (i, s) in enumerate(self.training_losses):
+            writer.add_scalar(self.name + "/loss/training", s, i);
+        for (i, s) in enumerate(self.test_losses):
+            writer.add_scalar(self.name + "/loss/test", s, i);
+        if self.in_test is not None:
+            writer.add_graph(self.model, self.in_test.to(global_device))
+        self.plot(writer)
+        writer.flush()
+        writer.close()
 
-        _, axes = subplots(2, 2)
+    def plot(self, writer: SummaryWriter | None = None):
+        if writer is None:
+            use("QtAgg")
+            ion()
+
+        fig, axes = subplots(2, 2)
         (sub0, sub1), (sub2, sub3) = axes
 
         sub0.plot(self.test_losses)
@@ -76,5 +92,8 @@ class TrainingResult:
         sub2.legend()
         sub3.legend()
 
-        show(block=True)
-        pause(0.001)
+        if writer is None:
+            show(block=True)
+            pause(0.001)
+        else:
+            writer.add_figure(self.name + "/plot/all", fig);

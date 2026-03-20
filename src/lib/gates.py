@@ -33,7 +33,14 @@ def gates_and_2(epochs: int = 1):
 
     model = SigmoidModel(2, 1, global_device)
     return train(
-        model, in_training, out_training, in_test, out_test, epochs=epochs, lr=0.4
+        model,
+        in_training,
+        out_training,
+        in_test,
+        out_test,
+        "and2",
+        epochs=epochs,
+        lr=0.4,
     )
 
 
@@ -65,7 +72,14 @@ def gates_and_5(epochs: int = 1):
 
     model = SigmoidModel(5, 1, global_device)
     return train(
-        model, in_training, out_training, in_test, out_test, epochs=epochs, lr=0.4
+        model,
+        in_training,
+        out_training,
+        in_test,
+        out_test,
+        "and4n1",
+        epochs=epochs,
+        lr=0.4,
     )
 
 
@@ -97,7 +111,14 @@ def gates_or_5(epochs: int = 1):
 
     model = SigmoidModel(5, 1, global_device)
     return train(
-        model, in_training, out_training, in_test, out_test, epochs=epochs, lr=0.4
+        model,
+        in_training,
+        out_training,
+        in_test,
+        out_test,
+        "or4n1",
+        epochs=epochs,
+        lr=0.4,
     )
 
 
@@ -129,7 +150,14 @@ def gates_complex_v1(epochs: int = 1):
 
     model = SigmoidModel(5, 1, global_device)
     return train(
-        model, in_training, out_training, in_test, out_test, epochs=epochs, lr=0.4
+        model,
+        in_training,
+        out_training,
+        in_test,
+        out_test,
+        "gate1",
+        epochs=epochs,
+        lr=0.4,
     )
 
 
