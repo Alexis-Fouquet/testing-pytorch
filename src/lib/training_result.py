@@ -4,7 +4,7 @@ from lib.models.base_model import BaseModel
 from torch.utils.tensorboard import SummaryWriter
 from matplotlib.pyplot import ion, pause, subplots, show
 from matplotlib import use
-from lib.device import global_device
+from lib.device import global_device, writer
 
 
 def to_cpu(t: Tensor | None) -> Tensor | None:
@@ -41,7 +41,6 @@ class TrainingResult:
         self.out_test = to_cpu(out_test)
 
     def show(self):
-        writer = SummaryWriter()
         for (i, s) in enumerate(self.training_losses):
             writer.add_scalar(self.name + "/loss/training", s, i);
         for (i, s) in enumerate(self.test_losses):
@@ -50,21 +49,14 @@ class TrainingResult:
             writer.add_graph(self.model, self.in_test.to(global_device))
         self.plot(writer)
         writer.flush()
-        writer.close()
 
     def plot(self, writer: SummaryWriter | None = None):
         if writer is None:
             use("QtAgg")
             ion()
 
-        fig, axes = subplots(2, 2)
-        (sub0, sub1), (sub2, sub3) = axes
-
-        sub0.plot(self.test_losses)
-        sub0.set_title("Test loss over time")
-
-        sub1.plot(self.training_losses)
-        sub1.set_title("Training loss over time")
+        fig, axes = subplots(1, 2)
+        (sub2, sub3) = axes
 
         sub2.set_title("Test data")
         sub3.set_title("Training data")

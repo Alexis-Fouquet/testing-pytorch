@@ -233,8 +233,10 @@ def cos_fct(epochs: int = 1):
     # Do not noise the test dataset as we want a linear output
     out_training, out_test = add_noise(y[:part_sep, :], 0.002), y[part_sep:, :]
 
-    size = 15
+    size = 10
     last_size = 4
+    # Changing the number of layers will lead to a failure
+    # Why?
     model = SeqModel(
         [
             ClassicModel(1, size, global_device),

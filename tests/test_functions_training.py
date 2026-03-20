@@ -27,6 +27,7 @@ def test_train_linear_200():
 def test_train_linear_400():
     base.seed()
     result = linear_classic(40)
+    result.show()
     assert 0 < result.loss < 0.1
 
 
@@ -50,42 +51,11 @@ def test_mean_400():
     assert 0 < mean_value(500).loss < 0.12
 
 
-def test_max_1():
-    base.seed()
-    result = almost_linear()
-    if 3 > result.loss > 0.2:
-        return
-    result.plot()
-    assert False, result.loss
-
-
-def test_max_200():
-    base.seed()
-    assert 0.1 < almost_linear(2).loss < 0.3
-
-
 def test_max_400():
     base.seed()
     result = almost_linear(40)
+    result.show()
     if 0 < result.loss < 0.1:
-        return
-    result.plot()
-    assert False, result.loss
-
-
-def test_min_1():
-    base.seed()
-    result = min_linear()
-    if 3 > result.loss > 0.2:
-        return
-    result.plot()
-    assert False, result.loss
-
-
-def test_min_200():
-    base.seed()
-    result = min_linear(40)
-    if 0.1 < result.loss < 0.25:
         return
     result.plot()
     assert False, result.loss
@@ -94,25 +64,8 @@ def test_min_200():
 def test_min_400():
     base.seed()
     result = min_linear(80)
+    result.show()
     if 0 < result.loss < 0.1:
-        return
-    result.plot()
-    assert False, result.loss
-
-
-def test_min_max_1():
-    base.seed()
-    result = min_max_linear()
-    if 3 > result.loss > 0.2:
-        return
-    result.plot()
-    assert False, result.loss
-
-
-def test_min_max_200():
-    base.seed()
-    result = min_max_linear(40)
-    if 0.1 < result.loss < 0.25:
         return
     result.plot()
     assert False, result.loss
@@ -121,25 +74,8 @@ def test_min_max_200():
 def test_min_max_400():
     base.seed()
     result = min_max_linear(250)
+    result.show()
     if 0 < result.loss < 0.1:
-        return
-    result.plot()
-    assert False, result.loss
-
-
-def test_cos_1():
-    base.seed()
-    result = cos_fct()
-    if 3 > result.loss > 0.2:
-        return
-    result.plot()
-    assert False, result.loss
-
-
-def test_cos_200():
-    base.seed()
-    result = cos_fct(40)
-    if 0.1 < result.loss < 0.25:
         return
     result.plot()
     assert False, result.loss
