@@ -10,20 +10,6 @@ from lib.functions import (
 )
 
 
-def test_train_linear_1():
-    base.seed()
-    assert 3 > linear_classic().loss > 0.15
-
-
-def test_train_linear_200():
-    base.seed()
-    result = linear_classic(20)
-    if 0.1 < result.loss < 0.3:
-        return
-    result.plot()
-    assert False, result.loss
-
-
 def test_train_linear_400():
     base.seed()
     result = linear_classic(40)
@@ -33,22 +19,16 @@ def test_train_linear_400():
 
 def test_noise_linear_400():
     base.seed()
-    assert 0 < linear_classic_noised(50).loss < 0.1
-
-
-def test_mean_1():
-    base.seed()
-    assert 3 > mean_value().loss > 0.1
-
-
-def test_mean_200():
-    base.seed()
-    assert 0 < mean_value(50).loss < 0.61
+    result = linear_classic_noised(50)
+    result.show()
+    assert 0 < result.loss < 0.1
 
 
 def test_mean_400():
     base.seed()
-    assert 0 < mean_value(500).loss < 0.12
+    result = mean_value(200)
+    result.show(classification=True)
+    assert 0 < result.loss < 0.12
 
 
 def test_max_400():

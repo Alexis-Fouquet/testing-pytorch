@@ -37,3 +37,6 @@ class SigmoidModel(BaseModel):
         print(
             f"Epoch {epoch} with tr {loss_tr} and te {loss_te} -- Acc {accu}% of {truth.shape}"
         )
+
+    def __repr__(self) -> str:
+        return str(self.weights) + " | " + str(self.biases)
