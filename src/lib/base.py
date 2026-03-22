@@ -59,6 +59,7 @@ def train(
     name: str,
     epochs: int = 1,
     lr: float = 0.07,
+    layers: int = 0,
 ) -> TrainingResult:
     assert epochs > 0, epochs
     fn_loss = model.fn_loss
@@ -98,11 +99,12 @@ def train(
     return TrainingResult(
         model,
         te_loss,
-        name + "_" + str(epochs),
+        name,
         training_losses=tr_losses,
         test_losses=te_losses,
         in_test=in_test,
         out_test=out_test,
         in_training=in_training,
         out_training=out_training,
+        hparams={"lr": lr, "layers": layers},
     )

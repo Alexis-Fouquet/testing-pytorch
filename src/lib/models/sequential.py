@@ -7,7 +7,7 @@ class SeqModel(BaseModel, nn.Sequential):
     A neural network (layer) with a sigmoid.
     """
 
-    def __init__(self, models: list[BaseModel], device: str) -> None:
+    def __init__(self, models: list, device: str) -> None:
         """
         Creates the neural network layer, with the sizes indicated.
         """

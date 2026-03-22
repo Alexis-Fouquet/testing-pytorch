@@ -1,10 +1,11 @@
+import datetime
 from torch import arange, dstack, inference_mode, meshgrid
 from torch._prims_common import Tensor
 from lib.models.base_model import BaseModel
 from torch.utils.tensorboard import SummaryWriter
 from matplotlib.pyplot import ion, pause, subplots, show
 from matplotlib import use
-from lib.device import global_device, writer
+from lib.device import global_device
 
 
 def to_cpu(t: Tensor) -> Tensor:
@@ -25,8 +26,9 @@ class TrainingResult:
         in_test: Tensor,
         out_training: Tensor,
         out_test: Tensor,
-        training_losses: list[Tensor] = list(),
-        test_losses: list[Tensor] = list(),
+        training_losses: list[Tensor],
+        test_losses: list[Tensor],
+        hparams: dict,
     ) -> None:
         self.name = name
         self.model = model
@@ -37,6 +39,7 @@ class TrainingResult:
         self.in_test = to_cpu(in_test)
         self.out_training = to_cpu(out_training)
         self.out_test = to_cpu(out_test)
+        self.hparams = hparams
 
     def show(self, classification=False, plot=True):
         # May not work without this
@@ -44,13 +47,22 @@ class TrainingResult:
         assert len(self.test_losses) > 0
         assert plot.__class__ is bool, plot.__class__
 
+        writer = SummaryWriter(
+            log_dir="runs/" + self.name + "/" + str(datetime.datetime.now().time())
+        )
+
         for i, s in enumerate(self.training_losses):
-            writer.add_scalar(self.name + "/loss/training", s, i)
+            writer.add_scalar("loss/training", s, i)
         for i, s in enumerate(self.test_losses):
-            writer.add_scalar(self.name + "/loss/test", s, i)
+            writer.add_scalar("loss/test", s, i)
         if plot:
             self.plot(writer=writer, classification=classification)
+        writer.add_hparams(
+            self.hparams,
+            {"loss/test": self.loss.item(), "loss/training": self.training_losses[-1]},
+        )
         writer.flush()
+        writer.close()
 
     def get_fct_figure(self):
         fig, axes = subplots(1, 2)
@@ -128,7 +140,5 @@ class TrainingResult:
         if writer is None:
             show(block=True)
         else:
-            writer.add_figure(
-                self.name + "/plot/all", fig, global_step=len(self.test_losses)
-            )
+            writer.add_figure("plot/all", fig, global_step=len(self.test_losses))
         pause(0.001)
