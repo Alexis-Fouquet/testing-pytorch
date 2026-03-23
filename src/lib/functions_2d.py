@@ -4,7 +4,7 @@ from lib.base import train
 from lib.device import global_device
 from lib.models.sequential import SeqModel
 from lib.models.sigmoid import SigmoidModel
-from lib.search_hparams import ModelTraining
+from lib.search_hparams import ModelTraining, TrainingParams
 from lib.training_result import TrainingResult
 
 
@@ -42,13 +42,13 @@ def circle_2d(epochs: int = 1):
         in_test,
         out_test,
         "2d_circle",
-        epochs=epochs,
-        lr=0.05,
+        TrainingParams(epochs=epochs, lr=0.05),
     )
 
 
 class Cos2D(ModelTraining):
-    def internal_train(self, epochs: int, lr: float, layers: int) -> TrainingResult:
+    def internal_train(self, params: TrainingParams) -> TrainingResult | None:
+        name = "cos_circle"
         points = 1000
         part = 0.75
 
@@ -71,7 +71,7 @@ class Cos2D(ModelTraining):
             [
                 SigmoidModel(2, size, global_device),
             ]
-            + [SigmoidModel(size, size, global_device) for _ in range(layers)]
+            + [SigmoidModel(size, size, global_device) for _ in range(params.layers)]
             + [
                 SigmoidModel(size, last_size, global_device),
                 SigmoidModel(last_size, 1, global_device),
@@ -81,14 +81,11 @@ class Cos2D(ModelTraining):
             layers_arg,
             global_device,
         )
-        return train(
-            model,
-            in_training,
-            out_training,
-            in_test,
-            out_test,
-            "cos_circle",
-            epochs=epochs,
-            lr=lr,
-            layers=layers,
-        )
+
+        if params.save_exist(name):
+            print(f"> Model {params.get_full_name(name)} already trained")
+            params.load(name, model)
+            return None
+        result = train(model, in_training, out_training, in_test, out_test, name, params)
+        params.save(name, model)
+        return result

@@ -1,8 +1,10 @@
 from torch import Tensor, inference_mode, manual_seed, nn, optim
 from torch.nn.modules.loss import _Loss
 from torch.optim import Optimizer
+from tqdm.rich import tqdm
 
 from lib.models.base_model import BaseModel
+from lib.search_hparams import TrainingParams
 from lib.training_result import TrainingResult
 
 
@@ -57,13 +59,11 @@ def train(
     in_test: Tensor,
     out_test: Tensor,
     name: str,
-    epochs: int = 1,
-    lr: float = 0.07,
-    layers: int = 0,
+    params: TrainingParams,
 ) -> TrainingResult:
-    assert epochs > 0, epochs
+    assert params.epochs > 0, params.epochs
     fn_loss = model.fn_loss
-    fn_opti = optim.AdamW(model.parameters(), lr=lr)
+    fn_opti = optim.AdamW(model.parameters(), lr=params.lr)
 
     in_training = in_training.to(model.device_str)
     out_training = out_training.to(model.device_str)
@@ -83,7 +83,7 @@ def train(
 
     te_loss = Tensor()
     tr_loss = Tensor()
-    for i in range(epochs):
+    for i in tqdm(range(params.epochs), desc="Epochs"):
         model.train()
         tr_loss = train_step(model, in_training, out_training, fn_loss, fn_opti)
         tr_losses.append(tr_loss)
@@ -92,9 +92,9 @@ def train(
             te_loss = testing(model, in_test, out_test, fn_loss, i, tr_loss=tr_loss)
             te_losses.append(te_loss)
 
-    if (epochs - 1) % 10 != 0:
+    if (params.epochs - 1) % 10 != 0:
         model.eval()
-        testing(model, in_test, out_test, fn_loss, epochs, tr_loss=tr_loss)
+        testing(model, in_test, out_test, fn_loss, params.epochs, tr_loss=tr_loss)
 
     return TrainingResult(
         model,
@@ -106,5 +106,5 @@ def train(
         out_test=out_test,
         in_training=in_training,
         out_training=out_training,
-        hparams={"lr": lr, "layers": layers},
+        hparams=params.get_hparams_dict(),
     )

@@ -5,6 +5,7 @@ from lib.base import train
 from lib.device import global_device
 from lib.models.sequential import SeqModel
 from lib.models.sigmoid import SigmoidModel
+from lib.search_hparams import TrainingParams
 from lib.training_result import TrainingResult
 from lib.utils.linear_generator import LinearGenerator, add_noise
 
@@ -26,7 +27,13 @@ def linear_classic(epochs: int = 1) -> TrainingResult:
 
     model = ClassicModel(1, 1, global_device)
     return train(
-        model, in_training, out_training, in_test, out_test, "linear", epochs=epochs
+        model,
+        in_training,
+        out_training,
+        in_test,
+        out_test,
+        "linear",
+        TrainingParams(epochs=epochs),
     )
 
 
@@ -54,7 +61,13 @@ def linear_classic_noised(epochs: int = 1):
 
     model = ClassicModel(1, 1, global_device)
     return train(
-        model, in_training, out_training, in_test, out_test, "noised", epochs=epochs
+        model,
+        in_training,
+        out_training,
+        in_test,
+        out_test,
+        "noised",
+        TrainingParams(epochs=epochs),
     )
 
 
@@ -91,8 +104,7 @@ def mean_value(epochs: int = 1):
         in_test,
         out_test,
         "mean",
-        epochs=epochs,
-        lr=0.1,
+        TrainingParams(epochs=epochs, lr=0.1),
     )
 
 
@@ -131,8 +143,7 @@ def almost_linear(epochs: int = 1):
         in_test,
         out_test,
         "max",
-        epochs=epochs,
-        lr=0.05,
+        TrainingParams(epochs=epochs, lr=0.05),
     )
 
 
@@ -171,8 +182,7 @@ def min_linear(epochs: int = 1):
         in_test,
         out_test,
         "min",
-        epochs=epochs,
-        lr=0.05,
+        TrainingParams(epochs=epochs, lr=0.05),
     )
 
 
@@ -213,8 +223,7 @@ def min_max_linear(epochs: int = 1):
         in_test,
         out_test,
         "minmax",
-        epochs=epochs,
-        lr=0.05,
+        TrainingParams(epochs=epochs, lr=0.05),
     )
 
 
@@ -255,6 +264,5 @@ def cos_fct(epochs: int = 1):
         in_test,
         out_test,
         "cos",
-        epochs=epochs,
-        lr=0.05,
+        TrainingParams(epochs=epochs, lr=0.05),
     )

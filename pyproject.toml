@@ -9,5 +9,7 @@ dependencies = [
     "pytest>=9.0.2",
     "pytest-sugar>=1.1.1",
     "pytest-xdist>=3.8.0",
+    "rich>=14.3.3",
     "torch>=2.10.0",
+    "tqdm>=4.67.3",
 ]
