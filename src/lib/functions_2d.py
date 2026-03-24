@@ -1,4 +1,4 @@
-from torch import Size, cos, rand, sqrt
+from torch import Size, cos, rand, sqrt, dstack
 
 from lib.base import train
 from lib.device import global_device
@@ -67,7 +67,6 @@ class Cos2D(ModelTraining):
         size = 40
         last_size = 10
 
-        # Best result -- why?
         layers_arg = (
             [
                 SigmoidModel(2, size, global_device),
@@ -76,6 +75,53 @@ class Cos2D(ModelTraining):
             + [
                 SigmoidModel(size, last_size, global_device),
                 SigmoidModel(last_size, 1, global_device),
+            ]
+        )
+        model = SeqModel(
+            layers_arg,
+            global_device,
+        )
+
+        if params.save_exist(name):
+            print(f"> Model {params.get_full_name(name)} already trained")
+            params.load(name, model)
+            return None
+        result = train(
+            model, in_training, out_training, in_test, out_test, name, params
+        )
+        params.save(name, model)
+        return result
+
+
+class ThreeElements(ModelTraining):
+    def internal_train(self, params: TrainingParams) -> TrainingResult | None:
+        name = "three_elements"
+        points = 1000
+        part = 0.75
+
+        x = rand([points, 2])
+        y0 = sqrt((x[:, 0] - 0.5) ** 2 + (x[:, 1] - 0.5) ** 2) > 0.3
+        y1 = y0 & (x[:, 0] > 0.5)
+        y1 = y1.float()
+        y2 = y0 & (x[:, 0] < 0.5)
+        y2 = y2.float()
+        y = dstack([y1, y2]).squeeze()
+        assert x.size() == Size([points, 2]), x.size()
+        assert y.size() == Size([points, 2]), y.size()
+
+        part_sep = (int)(points * part)
+        in_training, in_test = x[:part_sep, :], x[part_sep:, :]
+        out_training, out_test = y[:part_sep, :], y[part_sep:, :]
+
+        size = 40
+
+        layers_arg = (
+            [
+                SigmoidModel(2, size, global_device),
+            ]
+            + [SigmoidModel(size, size, global_device) for _ in range(params.layers)]
+            + [
+                SigmoidModel(size, 2, global_device),
             ]
         )
         model = SeqModel(

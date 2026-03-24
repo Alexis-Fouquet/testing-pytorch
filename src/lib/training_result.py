@@ -109,20 +109,33 @@ class TrainingResult:
             x, y = meshgrid(arange(-0.1, 1.1, 0.02), arange(-0.1, 1.1, 0.02))
             input = dstack([x, y])
             z = self.model(input.to(global_device)).cpu().squeeze()
-            assert z.size()[0] == x.size()[0]
-            assert z.size()[1] == x.size()[1]
+            assert z.size()[0] == x.size()[0], (z.size(), x.size())
+            assert z.size()[1] == x.size()[1], (z.size(), x.size())
+            if len(z.size()) > 2 and z.size()[2] == 2:
+                z = (z > 0.5).float()
+                z = z[..., 0] + z[..., 1] * 2
+            assert len(z.size()) == 2, z.size()
+            assert z.size()[0] == x.size()[0], (z.size(), x.size())
+            assert z.size()[1] == x.size()[1], (z.size(), x.size())
+
+            cte = self.out_test
+            ctr = self.out_training
+            if cte.size()[1] == 2:
+                cte = (cte > 0.5).float()
+                cte = cte[..., 0] + cte[..., 1] * 2
+            if ctr.size()[1] == 2:
+                ctr = (ctr > 0.5).float()
+                ctr = ctr[..., 0] + ctr[..., 1] * 2
 
             sub1.contourf(x, y, z)
             sub2.contourf(x, y, z)
 
             color = "0.8"
-            sub1.scatter(
-                self.in_test[:, 0], self.in_test[:, 1], c=self.out_test, edgecolor=color
-            )
+            sub1.scatter(self.in_test[:, 0], self.in_test[:, 1], c=cte, edgecolor=color)
             sub2.scatter(
                 self.in_training[:, 0],
                 self.in_training[:, 1],
-                c=self.out_training,
+                c=ctr,
                 edgecolor=color,
             )
 

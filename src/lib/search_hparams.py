@@ -8,6 +8,7 @@ from lib import base
 from lib.training_params import TrainingParams
 from lib.training_result import TrainingResult
 
+
 class ModelTraining:
     def __init__(
         self,

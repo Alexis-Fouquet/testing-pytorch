@@ -4,6 +4,7 @@ from lib.device import global_device
 from lib.base import train
 from lib.models.sequential import SeqModel
 from lib.models.sigmoid import SigmoidModel
+from lib.training_params import TrainingParams
 
 
 def gates_and_2(epochs: int = 1):
@@ -40,8 +41,7 @@ def gates_and_2(epochs: int = 1):
         in_test,
         out_test,
         "and2",
-        epochs=epochs,
-        lr=0.4,
+        TrainingParams(epochs=epochs, lr=0.4),
     )
 
 
@@ -79,8 +79,7 @@ def gates_and_5(epochs: int = 1):
         in_test,
         out_test,
         "and4n1",
-        epochs=epochs,
-        lr=0.4,
+        TrainingParams(epochs=epochs, lr=0.4),
     )
 
 
@@ -118,8 +117,7 @@ def gates_or_5(epochs: int = 1):
         in_test,
         out_test,
         "or4n1",
-        epochs=epochs,
-        lr=0.4,
+        TrainingParams(epochs=epochs, lr=0.4),
     )
 
 
@@ -157,8 +155,7 @@ def gates_complex_v1(epochs: int = 1):
         in_test,
         out_test,
         "gate1",
-        epochs=epochs,
-        lr=0.4,
+        TrainingParams(epochs=epochs, lr=0.4),
     )
 
 
@@ -205,6 +202,5 @@ def gates_xor(epochs: int = 1):
         in_test,
         out_test,
         "xor2",
-        epochs=epochs,
-        lr=1.5,
+        TrainingParams(epochs=epochs, lr=1.5),
     )

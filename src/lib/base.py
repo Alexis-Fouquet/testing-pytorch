@@ -107,5 +107,5 @@ def train(
         in_training=in_training,
         out_training=out_training,
         hparams=params.get_hparams_dict(),
-        params=params
+        params=params,
     )
