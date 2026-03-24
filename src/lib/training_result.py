@@ -113,7 +113,7 @@ class TrainingResult:
             assert z.size()[1] == x.size()[1], (z.size(), x.size())
             if len(z.size()) > 2 and z.size()[2] == 2:
                 z = (z > 0.5).float()
-                z = z[..., 0] + z[..., 1] * 2
+                z = z[..., 0] - z[..., 1]
             assert len(z.size()) == 2, z.size()
             assert z.size()[0] == x.size()[0], (z.size(), x.size())
             assert z.size()[1] == x.size()[1], (z.size(), x.size())
@@ -122,10 +122,10 @@ class TrainingResult:
             ctr = self.out_training
             if cte.size()[1] == 2:
                 cte = (cte > 0.5).float()
-                cte = cte[..., 0] + cte[..., 1] * 2
+                cte = cte[..., 0] - cte[..., 1]
             if ctr.size()[1] == 2:
                 ctr = (ctr > 0.5).float()
-                ctr = ctr[..., 0] + ctr[..., 1] * 2
+                ctr = ctr[..., 0] - ctr[..., 1]
 
             sub1.contourf(x, y, z)
             sub2.contourf(x, y, z)
