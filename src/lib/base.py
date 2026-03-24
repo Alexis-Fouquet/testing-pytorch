@@ -4,7 +4,7 @@ from torch.optim import Optimizer
 from tqdm.rich import tqdm
 
 from lib.models.base_model import BaseModel
-from lib.search_hparams import TrainingParams
+from lib.training_params import TrainingParams
 from lib.training_result import TrainingResult
 
 
@@ -107,4 +107,5 @@ def train(
         in_training=in_training,
         out_training=out_training,
         hparams=params.get_hparams_dict(),
+        params=params
     )

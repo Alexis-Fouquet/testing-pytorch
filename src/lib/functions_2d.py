@@ -4,7 +4,8 @@ from lib.base import train
 from lib.device import global_device
 from lib.models.sequential import SeqModel
 from lib.models.sigmoid import SigmoidModel
-from lib.search_hparams import ModelTraining, TrainingParams
+from lib.training_params import TrainingParams
+from lib.search_hparams import ModelTraining
 from lib.training_result import TrainingResult
 
 
@@ -86,6 +87,8 @@ class Cos2D(ModelTraining):
             print(f"> Model {params.get_full_name(name)} already trained")
             params.load(name, model)
             return None
-        result = train(model, in_training, out_training, in_test, out_test, name, params)
+        result = train(
+            model, in_training, out_training, in_test, out_test, name, params
+        )
         params.save(name, model)
         return result

@@ -1,4 +1,3 @@
-import datetime
 from torch import arange, dstack, inference_mode, meshgrid
 from torch._prims_common import Tensor
 from lib.models.base_model import BaseModel
@@ -6,6 +5,7 @@ from torch.utils.tensorboard import SummaryWriter
 from matplotlib.pyplot import ion, pause, subplots, show
 from matplotlib import use
 from lib.device import global_device
+from lib.training_params import TrainingParams
 
 
 def to_cpu(t: Tensor) -> Tensor:
@@ -29,8 +29,9 @@ class TrainingResult:
         training_losses: list[Tensor],
         test_losses: list[Tensor],
         hparams: dict,
+        params: TrainingParams,
     ) -> None:
-        self.name = name
+        self.name = name + "_" + str(params.epochs)
         self.model = model
         self.loss = loss
         self.training_losses = list_to_float(training_losses)
@@ -40,6 +41,7 @@ class TrainingResult:
         self.out_training = to_cpu(out_training)
         self.out_test = to_cpu(out_test)
         self.hparams = hparams
+        self.params = params
 
     def show(self, classification=False, plot=True):
         # May not work without this
@@ -48,7 +50,7 @@ class TrainingResult:
         assert plot.__class__ is bool, plot.__class__
 
         writer = SummaryWriter(
-            log_dir="runs/" + self.name + "/" + str(datetime.datetime.now().time())
+            log_dir="runs/" + self.name + "/" + self.params.get_full_name(self.name)
         )
 
         for i, s in enumerate(self.training_losses):
