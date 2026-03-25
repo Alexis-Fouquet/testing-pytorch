@@ -1,5 +1,6 @@
 from torch import Size, Tensor, bernoulli, concat, ones
 
+from lib.data.tensor_data import TensorDatasetSaved
 from lib.device import global_device
 from lib.base import train
 from lib.models.sequential import SeqModel
@@ -36,10 +37,8 @@ def gates_and_2(epochs: int = 1):
     model = SigmoidModel(2, 1, global_device)
     return train(
         model,
-        in_training,
-        out_training,
-        in_test,
-        out_test,
+        TensorDatasetSaved(in_training, out_training),
+        TensorDatasetSaved(in_test, out_test),
         "and2",
         TrainingParams(epochs=epochs, lr=0.4),
     )
@@ -74,10 +73,8 @@ def gates_and_5(epochs: int = 1):
     model = SigmoidModel(5, 1, global_device)
     return train(
         model,
-        in_training,
-        out_training,
-        in_test,
-        out_test,
+        TensorDatasetSaved(in_training, out_training),
+        TensorDatasetSaved(in_test, out_test),
         "and4n1",
         TrainingParams(epochs=epochs, lr=0.4),
     )
@@ -112,10 +109,8 @@ def gates_or_5(epochs: int = 1):
     model = SigmoidModel(5, 1, global_device)
     return train(
         model,
-        in_training,
-        out_training,
-        in_test,
-        out_test,
+        TensorDatasetSaved(in_training, out_training),
+        TensorDatasetSaved(in_test, out_test),
         "or4n1",
         TrainingParams(epochs=epochs, lr=0.4),
     )
@@ -150,10 +145,8 @@ def gates_complex_v1(epochs: int = 1):
     model = SigmoidModel(5, 1, global_device)
     return train(
         model,
-        in_training,
-        out_training,
-        in_test,
-        out_test,
+        TensorDatasetSaved(in_training, out_training),
+        TensorDatasetSaved(in_test, out_test),
         "gate1",
         TrainingParams(epochs=epochs, lr=0.4),
     )
@@ -197,10 +190,8 @@ def gates_xor(epochs: int = 1):
     )
     return train(
         model,
-        in_training,
-        out_training,
-        in_test,
-        out_test,
+        TensorDatasetSaved(in_training, out_training),
+        TensorDatasetSaved(in_test, out_test),
         "xor2",
         TrainingParams(epochs=epochs, lr=1.5),
     )

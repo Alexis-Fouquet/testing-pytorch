@@ -7,4 +7,4 @@ def test_hello():
 
 
 def test_version():
-    assert torch.__version__.startswith("2.10")
+    assert torch.__version__.startswith("2.11")

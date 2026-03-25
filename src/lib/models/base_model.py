@@ -1,5 +1,4 @@
-from abc import abstractmethod
-from torch import nn, Tensor
+from torch import nn
 from torch.nn.modules.loss import _Loss
 
 
@@ -13,9 +12,3 @@ class BaseModel(nn.Module):
         super().__init__()
         self.device_str = device
         self.fn_loss = fn_loss
-
-    @abstractmethod
-    def print_epoch(
-        self, truth: Tensor, out: Tensor, loss_tr: Tensor, loss_te: Tensor, epoch: int
-    ):
-        pass

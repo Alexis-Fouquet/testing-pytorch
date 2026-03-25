@@ -1,4 +1,4 @@
-from torch import nn, randn, sigmoid, round
+from torch import nn, randn, sigmoid
 from torch._prims_common import Tensor
 from lib.models.base_model import BaseModel
 
@@ -28,15 +28,6 @@ class SigmoidModel(BaseModel):
 
     def forward(self, x: Tensor) -> Tensor:
         return sigmoid(x @ self.weights + self.biases)
-
-    def print_epoch(
-        self, truth: Tensor, out: Tensor, loss_tr: Tensor, loss_te: Tensor, epoch: int
-    ):
-        out = (out >= 0.5).float()
-        accu = round((out == truth).float().mean() * 10000) / 100
-        print(
-            f"Epoch {epoch} with tr {loss_tr} and te {loss_te} -- Acc {accu}% of {truth.shape}"
-        )
 
     def __repr__(self) -> str:
         return str(self.weights) + " | " + str(self.biases)

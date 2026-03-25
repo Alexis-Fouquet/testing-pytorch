@@ -21,6 +21,9 @@ if __name__ == "__main__":
         ThreeElements(
             epochs=3000, layers=[0, 1, 2, 3, 4, 5, 6], lrs=[0.1, 0.01, 0.001, 0.0003]
         ),
+        ThreeElements(
+            epochs=223, layers=[0, 1, 2, 3, 4, 5, 6], lrs=[0.1, 0.01, 0.001, 0.0003]
+        ),
     ]
 
     print("Training all")

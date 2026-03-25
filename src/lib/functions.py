@@ -1,5 +1,6 @@
 from torch import Size, cos, maximum, minimum, pi, rand, randn
 
+from lib.data.tensor_data import TensorDatasetSaved
 from lib.models.classic import ClassicModel
 from lib.base import train
 from lib.device import global_device
@@ -28,10 +29,8 @@ def linear_classic(epochs: int = 1) -> TrainingResult:
     model = ClassicModel(1, 1, global_device)
     return train(
         model,
-        in_training,
-        out_training,
-        in_test,
-        out_test,
+        TensorDatasetSaved(in_training, out_training),
+        TensorDatasetSaved(in_test, out_test),
         "linear",
         TrainingParams(epochs=epochs),
     )
@@ -62,10 +61,8 @@ def linear_classic_noised(epochs: int = 1):
     model = ClassicModel(1, 1, global_device)
     return train(
         model,
-        in_training,
-        out_training,
-        in_test,
-        out_test,
+        TensorDatasetSaved(in_training, out_training),
+        TensorDatasetSaved(in_test, out_test),
         "noised",
         TrainingParams(epochs=epochs),
     )
@@ -99,10 +96,8 @@ def mean_value(epochs: int = 1):
     model = ClassicModel(2, 1, global_device)
     return train(
         model,
-        in_training,
-        out_training,
-        in_test,
-        out_test,
+        TensorDatasetSaved(in_training, out_training),
+        TensorDatasetSaved(in_test, out_test),
         "mean",
         TrainingParams(epochs=epochs, lr=0.1),
     )
@@ -138,10 +133,8 @@ def almost_linear(epochs: int = 1):
     )
     return train(
         model,
-        in_training,
-        out_training,
-        in_test,
-        out_test,
+        TensorDatasetSaved(in_training, out_training),
+        TensorDatasetSaved(in_test, out_test),
         "max",
         TrainingParams(epochs=epochs, lr=0.05),
     )
@@ -177,10 +170,8 @@ def min_linear(epochs: int = 1):
     )
     return train(
         model,
-        in_training,
-        out_training,
-        in_test,
-        out_test,
+        TensorDatasetSaved(in_training, out_training),
+        TensorDatasetSaved(in_test, out_test),
         "min",
         TrainingParams(epochs=epochs, lr=0.05),
     )
@@ -218,10 +209,8 @@ def min_max_linear(epochs: int = 1):
     )
     return train(
         model,
-        in_training,
-        out_training,
-        in_test,
-        out_test,
+        TensorDatasetSaved(in_training, out_training),
+        TensorDatasetSaved(in_test, out_test),
         "minmax",
         TrainingParams(epochs=epochs, lr=0.05),
     )
@@ -259,10 +248,8 @@ def cos_fct(epochs: int = 1):
     )
     return train(
         model,
-        in_training,
-        out_training,
-        in_test,
-        out_test,
+        TensorDatasetSaved(in_training, out_training),
+        TensorDatasetSaved(in_test, out_test),
         "cos",
         TrainingParams(epochs=epochs, lr=0.05),
     )

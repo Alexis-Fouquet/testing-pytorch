@@ -29,10 +29,3 @@ class ClassicModel(base_model.BaseModel):
 
     def forward(self, x: Tensor) -> Tensor:
         return x @ self.weights + self.biases
-
-    def print_epoch(
-        self, truth: Tensor, out: Tensor, loss_tr: Tensor, loss_te: Tensor, epoch: int
-    ):
-        out = out
-        truth = truth
-        print(f"Epoch {epoch} with tr {loss_tr} and te {loss_te}")

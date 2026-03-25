@@ -1,8 +1,10 @@
-from torch import Tensor, inference_mode, manual_seed, nn, optim
+from torch import Tensor, inference_mode, manual_seed, optim, zeros
 from torch.nn.modules.loss import _Loss
 from torch.optim import Optimizer
+from torch.utils.data import DataLoader, Dataset
 from tqdm.rich import tqdm
 
+from lib.data.tensor_data import TensorDatasetSaved
 from lib.models.base_model import BaseModel
 from lib.training_params import TrainingParams
 from lib.training_result import TrainingResult
@@ -15,49 +17,52 @@ def seed(seed: int = 42):
 
 def testing(
     model: BaseModel,
-    in_test: Tensor,
-    out_test: Tensor,
+    data: DataLoader,
     fn_loss: _Loss,
-    epoch: int,
-    tr_loss: Tensor,
-):
+) -> Tensor:
     with inference_mode():
-        out_model = model(in_test)
-        assert out_model.size() == out_test.size(), (
-            out_model.size(),
-            out_test.size(),
-        )
-        loss = fn_loss(out_model, out_test)
-        model.print_epoch(out_test, out_model, tr_loss, loss, epoch)
-        return loss
+        total_loss = zeros([1], device=model.device_str)
+        for x, y in data:
+            x = x.to(model.device_str, non_blocking=True)
+            y = y.to(model.device_str, non_blocking=True)
+            out_model = model(x)
+            assert out_model.size() == y.size(), (
+                out_model.size(),
+                y.size(),
+            )
+            loss: Tensor = fn_loss(out_model, y)
+            total_loss += loss
+        return total_loss
 
 
 def train_step(
-    model: nn.Module,
-    in_training: Tensor,
-    out_training: Tensor,
+    model: BaseModel,
+    data: DataLoader,
     fn_loss: _Loss,
     fn_opti: Optimizer,
-):
-    out_model = model(in_training)
-    assert out_model.size() == out_training.size(), (
-        out_model.size(),
-        out_training.size(),
-    )
-    loss = fn_loss(out_model, out_training)
-    fn_opti.zero_grad()
-    # Much easier than in C
-    loss.backward()
-    fn_opti.step()
-    return loss
+) -> Tensor:
+    total_loss = zeros([1], device=model.device_str)
+    for x, y in data:
+        x = x.to(model.device_str, non_blocking=True)
+        y = y.to(model.device_str, non_blocking=True)
+        out_model = model(x)
+        assert out_model.size() == y.size(), (
+            out_model.size(),
+            y.size(),
+        )
+        loss: Tensor = fn_loss(out_model, y)
+        fn_opti.zero_grad()
+        # Much easier than in C
+        loss.backward()
+        fn_opti.step()
+        total_loss += loss
+    return total_loss
 
 
 def train(
     model: BaseModel,
-    in_training: Tensor,
-    out_training: Tensor,
-    in_test: Tensor,
-    out_test: Tensor,
+    training: Dataset,
+    test_data: Dataset,
     name: str,
     params: TrainingParams,
 ) -> TrainingResult:
@@ -65,17 +70,20 @@ def train(
     fn_loss = model.fn_loss
     fn_opti = optim.AdamW(model.parameters(), lr=params.lr)
 
-    in_training = in_training.to(model.device_str)
-    out_training = out_training.to(model.device_str)
-    in_test = in_test.to(model.device_str)
-    out_test = out_test.to(model.device_str)
-    assert len(in_training.size()) == len(in_test.size()), (
-        in_training.size(),
-        in_test.size(),
+    # Note: cannot pin if already on GPU
+    train_dataloader = DataLoader(
+        training,
+        batch_size=len(training.x) if training is TensorDatasetSaved else 1024,
+        shuffle=False,
+        pin_memory=False,
+        num_workers=0 if training is TensorDatasetSaved else 0,
     )
-    assert len(out_training.size()) == len(out_test.size()), (
-        out_training.size(),
-        out_test.size(),
+    test_dataloader = DataLoader(
+        test_data,
+        batch_size=len(test_data.x) if test_data is TensorDatasetSaved else 1024,
+        shuffle=False,
+        pin_memory=False,
+        num_workers=0 if test_data is TensorDatasetSaved else 0,
     )
 
     te_losses = []
@@ -85,16 +93,16 @@ def train(
     tr_loss = Tensor()
     for i in tqdm(range(params.epochs), desc="Epochs"):
         model.train()
-        tr_loss = train_step(model, in_training, out_training, fn_loss, fn_opti)
+        tr_loss = train_step(model, train_dataloader, fn_loss, fn_opti)
         tr_losses.append(tr_loss)
         if i % 10 == 0:
             model.eval()
-            te_loss = testing(model, in_test, out_test, fn_loss, i, tr_loss=tr_loss)
+            te_loss = testing(model, test_dataloader, fn_loss)
             te_losses.append(te_loss)
 
     if (params.epochs - 1) % 10 != 0:
         model.eval()
-        testing(model, in_test, out_test, fn_loss, params.epochs, tr_loss=tr_loss)
+        te_loss = testing(model, test_dataloader, fn_loss)
 
     return TrainingResult(
         model,
@@ -102,10 +110,8 @@ def train(
         name,
         training_losses=tr_losses,
         test_losses=te_losses,
-        in_test=in_test,
-        out_test=out_test,
-        in_training=in_training,
-        out_training=out_training,
+        train_data=training,
+        test_data=test_data,
         hparams=params.get_hparams_dict(),
         params=params,
     )
