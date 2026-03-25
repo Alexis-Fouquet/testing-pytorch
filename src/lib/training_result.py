@@ -64,17 +64,15 @@ class TrainingResult:
 
     def get_fct_figure(self):
         if (
-            self.test_data is not TensorDatasetSaved
-            or self.train_data is not TensorDatasetSaved
+            not isinstance(self.test_data, TensorDatasetSaved)
+            or not isinstance(self.train_data, TensorDatasetSaved)
         ):
             return
-        test_data: TensorDatasetSaved = self.test_data
-        train_data: TensorDatasetSaved = self.test_data
 
-        in_test = test_data.x
-        out_test = test_data.y
-        in_training = train_data.x
-        out_training = train_data.y
+        in_test = self.test_data.x
+        out_test = self.test_data.y
+        in_training = self.train_data.x
+        out_training = self.train_data.y
 
         fig, axes = subplots(1, 2)
         (sub2, sub3) = axes
@@ -109,17 +107,15 @@ class TrainingResult:
 
     def get_classification_figure(self):
         if (
-            self.test_data is not TensorDatasetSaved
-            or self.train_data is not TensorDatasetSaved
+            not isinstance(self.test_data, TensorDatasetSaved)
+            or not isinstance(self.train_data, TensorDatasetSaved)
         ):
             return
-        test_data: TensorDatasetSaved = self.test_data
-        train_data: TensorDatasetSaved = self.test_data
 
-        in_test = test_data.x
-        out_test = test_data.y
-        in_training = train_data.x
-        out_training = train_data.y
+        in_test = self.test_data.x
+        out_test = self.test_data.y
+        in_training = self.train_data.x
+        out_training = self.train_data.y
 
         fig, axes = subplots(1, 2)
         sub1, sub2 = axes
