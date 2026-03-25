@@ -1,5 +1,6 @@
 from tqdm.rich import tqdm
 from lib.functions_2d import Cos2D, ThreeElements
+from lib.mnist_simple import MnistSimple
 
 
 if __name__ == "__main__":
@@ -24,6 +25,7 @@ if __name__ == "__main__":
         ThreeElements(
             epochs=223, layers=[0, 1, 2, 3, 4, 5, 6], lrs=[0.1, 0.01, 0.001, 0.0003]
         ),
+        MnistSimple(epochs=223, layers=[0, 1, 2], lrs=[0.01, 0.001, 0.0003]),
     ]
 
     print("Training all")

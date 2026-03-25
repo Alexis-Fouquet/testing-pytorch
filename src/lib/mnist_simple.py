@@ -33,11 +33,11 @@ class MnistSimple(ModelTraining):
 
         layers_arg = (
             [
-                SigmoidModel(2, size, global_device),
+                SigmoidModel(28, size, global_device),
             ]
             + [SigmoidModel(size, size, global_device) for _ in range(params.layers)]
             + [
-                SigmoidModel(size, 2, global_device),
+                SigmoidModel(size, 10, global_device),
             ]
         )
         model = SeqModel(
