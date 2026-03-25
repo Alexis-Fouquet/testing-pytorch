@@ -71,19 +71,22 @@ def train(
     fn_opti = optim.AdamW(model.parameters(), lr=params.lr)
 
     # Note: cannot pin if already on GPU
+    # Note: cannot use workers with pytest
+    tr_saved = isinstance(training, TensorDatasetSaved)
+    te_saved = isinstance(test_data, TensorDatasetSaved)
     train_dataloader = DataLoader(
         training,
-        batch_size=len(training.x) if training is TensorDatasetSaved else 1024,
-        shuffle=False,
+        batch_size=len(training.x) if tr_saved else 1024,
+        shuffle=not tr_saved,
         pin_memory=False,
-        num_workers=0 if training is TensorDatasetSaved else 0,
+        num_workers=0 if tr_saved else 3,
     )
     test_dataloader = DataLoader(
         test_data,
-        batch_size=len(test_data.x) if test_data is TensorDatasetSaved else 1024,
+        batch_size=len(test_data.x) if te_saved else 1024,
         shuffle=False,
         pin_memory=False,
-        num_workers=0 if test_data is TensorDatasetSaved else 0,
+        num_workers=0 if te_saved else 3,
     )
 
     te_losses = []
