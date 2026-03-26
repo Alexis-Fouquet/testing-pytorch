@@ -1,5 +1,5 @@
 from torch import nn
-from lib.models.base_model import BaseModel
+from lib.modules.base_model import BaseModel
 
 
 class SeqModel(BaseModel, nn.Sequential):

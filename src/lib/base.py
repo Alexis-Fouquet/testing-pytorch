@@ -5,7 +5,7 @@ from torch.utils.data import DataLoader, Dataset
 from tqdm.rich import tqdm
 
 from lib.data.tensor_data import TensorDatasetSaved
-from lib.models.base_model import BaseModel
+from lib.modules.base_model import BaseModel
 from lib.training_params import TrainingParams
 from lib.training_result import TrainingResult
 

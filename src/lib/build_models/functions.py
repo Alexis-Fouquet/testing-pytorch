@@ -1,11 +1,11 @@
 from torch import Size, cos, maximum, minimum, pi, rand, randn
 
 from lib.data.tensor_data import TensorDatasetSaved
-from lib.models.classic import ClassicModel
+from lib.modules.classic import ClassicModel
 from lib.base import train
 from lib.device import global_device
-from lib.models.sequential import SeqModel
-from lib.models.sigmoid import SigmoidModel
+from lib.modules.sequential import SeqModel
+from lib.modules.sigmoid import SigmoidModel
 from lib.search_hparams import TrainingParams
 from lib.training_result import TrainingResult
 from lib.utils.linear_generator import LinearGenerator, add_noise

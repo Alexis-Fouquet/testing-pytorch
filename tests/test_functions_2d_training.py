@@ -1,5 +1,5 @@
 from lib import base
-from lib.functions_2d import circle_2d
+from lib.build_models.functions_2d import circle_2d
 
 
 def test_circle_400():

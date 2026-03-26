@@ -4,8 +4,8 @@ from torchvision.transforms import ToTensor
 
 from lib.base import train
 from lib.device import global_device
-from lib.models.sequential import SeqModel
-from lib.models.sigmoid import SigmoidModel
+from lib.modules.sequential import SeqModel
+from lib.modules.sigmoid import SigmoidModel
 from lib.search_hparams import ModelTraining
 from lib.training_params import TrainingParams
 from lib.training_result import TrainingResult

@@ -1,5 +1,4 @@
-from torch import randn
-from torch._prims_common import Tensor
+from torch import randn, Tensor
 
 
 def add_noise(y: Tensor, noise: float = 0):

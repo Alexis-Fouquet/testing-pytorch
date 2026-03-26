@@ -3,8 +3,8 @@ from torch import Size, cos, rand, sqrt, dstack
 from lib.base import train
 from lib.data.tensor_data import TensorDatasetSaved
 from lib.device import global_device
-from lib.models.sequential import SeqModel
-from lib.models.sigmoid import SigmoidModel
+from lib.modules.sequential import SeqModel
+from lib.modules.sigmoid import SigmoidModel
 from lib.training_params import TrainingParams
 from lib.search_hparams import ModelTraining
 from lib.training_result import TrainingResult

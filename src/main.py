@@ -1,6 +1,6 @@
 from tqdm.rich import tqdm
-from lib.functions_2d import Cos2D, ThreeElements
-from lib.mnist_simple import MnistSimple
+from lib.build_models.functions_2d import Cos2D, ThreeElements
+from lib.build_models.mnist_simple import MnistSimple
 
 
 if __name__ == "__main__":

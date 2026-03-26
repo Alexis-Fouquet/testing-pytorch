@@ -1,5 +1,5 @@
 from lib import base, device
-from lib.models import classic
+from lib.modules import classic
 
 
 def test_init():

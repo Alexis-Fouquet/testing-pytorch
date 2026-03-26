@@ -1,5 +1,5 @@
 from lib import base
-from lib.functions import (
+from lib.build_models.functions import (
     almost_linear,
     cos_fct,
     linear_classic,

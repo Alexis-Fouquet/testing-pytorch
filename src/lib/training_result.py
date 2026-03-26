@@ -2,7 +2,7 @@ from torch import arange, dstack, inference_mode, meshgrid
 from torch._prims_common import Tensor
 from torch.utils.data import Dataset
 from lib.data.tensor_data import TensorDatasetSaved
-from lib.models.base_model import BaseModel
+from lib.modules.base_model import BaseModel
 from torch.utils.tensorboard import SummaryWriter
 from matplotlib.pyplot import ion, pause, subplots
 from matplotlib import use

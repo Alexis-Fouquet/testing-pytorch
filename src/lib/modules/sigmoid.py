@@ -1,12 +1,11 @@
-from torch import nn, randn
-from torch import Tensor
+from torch import nn, randn, sigmoid
+from torch._prims_common import Tensor
+from lib.modules.base_model import BaseModel
 
-from lib.models import base_model
 
-
-class ClassicModel(base_model.BaseModel):
+class SigmoidModel(BaseModel):
     """
-    A neural network (layer) as simple as possible.
+    A neural network (layer) with a sigmoid.
     """
 
     def __init__(self, input_size: int, output_size: int, device: str) -> None:
@@ -14,7 +13,7 @@ class ClassicModel(base_model.BaseModel):
         Creates the neural network layer, with the sizes indicated.
         """
 
-        super().__init__(device, nn.L1Loss())
+        super().__init__(device, nn.BCELoss())
         assert input_size > 0
         assert output_size > 0
         self.input_size = input_size
@@ -28,4 +27,7 @@ class ClassicModel(base_model.BaseModel):
         )
 
     def forward(self, x: Tensor) -> Tensor:
-        return x @ self.weights + self.biases
+        return sigmoid(x @ self.weights + self.biases)
+
+    def __repr__(self) -> str:
+        return str(self.weights) + " | " + str(self.biases)
