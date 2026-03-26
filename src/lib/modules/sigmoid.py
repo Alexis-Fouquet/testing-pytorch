@@ -1,5 +1,4 @@
-from torch import nn, randn, sigmoid
-from torch._prims_common import Tensor
+from torch import nn, randn, sigmoid, Tensor
 from lib.modules.base_model import BaseModel
 
 

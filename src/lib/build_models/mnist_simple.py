@@ -1,4 +1,5 @@
 from torch import Tensor
+from torch.nn import CrossEntropyLoss
 from torch.utils.data import Dataset
 from torchvision import datasets
 from torchvision.transforms import Compose, ToTensor, Lambda
@@ -63,10 +64,7 @@ class MnistSimple(ModelTraining):
                 SigmoidModel(size, 10, global_device),
             ]
         )
-        model = SeqModel(
-            layers_arg,
-            global_device,
-        )
+        model = SeqModel(layers_arg, global_device, loss=CrossEntropyLoss())
 
         if params.save_exist(name):
             print(f"> Model {params.get_full_name(name)} already trained")

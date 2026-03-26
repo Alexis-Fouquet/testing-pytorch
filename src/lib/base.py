@@ -3,7 +3,6 @@ from torch.nn.modules.loss import _Loss
 from torch.optim import Optimizer
 from torch.utils.data import DataLoader, Dataset
 from tqdm.rich import tqdm
-from rich import print
 
 from lib.data.tensor_data import TensorDatasetSaved
 from lib.modules.base_model import BaseModel
@@ -27,8 +26,12 @@ def testing(
             x = x.to(model.device_str, non_blocking=True)
             y = y.to(model.device_str, non_blocking=True)
             out_model = model(x)
-            assert out_model.size() == y.size(), (
+            assert (
+                out_model.size()[0] == y.size()[0]
+                and len(y.size()) <= len(out_model.size()) <= 2
+            ), (
                 out_model.size(),
+                x.size(),
                 y.size(),
             )
             loss: Tensor = fn_loss(out_model, y)
