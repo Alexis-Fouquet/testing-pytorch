@@ -63,9 +63,8 @@ class TrainingResult:
         writer.close()
 
     def get_fct_figure(self):
-        if (
-            not isinstance(self.test_data, TensorDatasetSaved)
-            or not isinstance(self.train_data, TensorDatasetSaved)
+        if not isinstance(self.test_data, TensorDatasetSaved) or not isinstance(
+            self.train_data, TensorDatasetSaved
         ):
             return
 
@@ -106,9 +105,8 @@ class TrainingResult:
         return fig
 
     def get_classification_figure(self):
-        if (
-            not isinstance(self.test_data, TensorDatasetSaved)
-            or not isinstance(self.train_data, TensorDatasetSaved)
+        if not isinstance(self.test_data, TensorDatasetSaved) or not isinstance(
+            self.train_data, TensorDatasetSaved
         ):
             return
 

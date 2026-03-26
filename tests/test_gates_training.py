@@ -1,5 +1,11 @@
 from lib import base
-from lib.build_models.gates import gates_and_2, gates_and_5, gates_complex_v1, gates_or_5, gates_xor
+from lib.build_models.gates import (
+    gates_and_2,
+    gates_and_5,
+    gates_complex_v1,
+    gates_or_5,
+    gates_xor,
+)
 
 
 def test_and_400():

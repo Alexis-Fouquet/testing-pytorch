@@ -1,3 +1,4 @@
+from rich import print
 from torch import Size, cos, rand, sqrt, dstack
 
 from lib.base import train

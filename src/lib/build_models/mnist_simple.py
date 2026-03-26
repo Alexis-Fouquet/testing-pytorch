@@ -1,6 +1,8 @@
+from torch import Tensor
 from torch.utils.data import Dataset
 from torchvision import datasets
-from torchvision.transforms import ToTensor
+from torchvision.transforms import Compose, ToTensor, Lambda
+from rich import print
 
 from lib.base import train
 from lib.device import global_device
@@ -11,13 +13,34 @@ from lib.training_params import TrainingParams
 from lib.training_result import TrainingResult
 
 
+def transform(x: Tensor) -> Tensor:
+    # There is only one input each time
+    return x.flatten()
+
+
 def get_datasets() -> tuple[Dataset, Dataset]:
     training_data = datasets.MNIST(
-        root="data", train=True, download=True, transform=ToTensor()
+        root="data",
+        train=True,
+        download=True,
+        transform=Compose(
+            [
+                ToTensor(),
+                Lambda(transform),
+            ]
+        ),
     )
 
     test_data = datasets.MNIST(
-        root="data", train=False, download=True, transform=ToTensor()
+        root="data",
+        train=False,
+        download=True,
+        transform=Compose(
+            [
+                ToTensor(),
+                Lambda(transform),
+            ]
+        ),
     )
 
     return (training_data, test_data)
@@ -33,7 +56,7 @@ class MnistSimple(ModelTraining):
 
         layers_arg = (
             [
-                SigmoidModel(28, size, global_device),
+                SigmoidModel(28 * 28, size, global_device),
             ]
             + [SigmoidModel(size, size, global_device) for _ in range(params.layers)]
             + [
