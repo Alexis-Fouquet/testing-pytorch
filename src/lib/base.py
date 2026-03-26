@@ -45,25 +45,17 @@ def train_step(
     fn_loss: _Loss,
     fn_opti: Optimizer,
 ) -> Tensor:
-    total_loss = zeros([1], device=model.device_str)
+    total_loss = zeros((), device=model.device_str)
     for x, y in data:
         x = x.to(model.device_str, non_blocking=True)
         y = y.to(model.device_str, non_blocking=True)
         out_model = model(x)
-        assert (
-            out_model.size()[0] == y.size()[0]
-            and len(y.size()) <= len(out_model.size()) <= 2
-        ), (
-            out_model.size(),
-            x.size(),
-            y.size(),
-        )
         loss: Tensor = fn_loss(out_model, y)
         fn_opti.zero_grad()
         # Much easier than in C
         loss.backward()
         fn_opti.step()
-        total_loss += loss
+        total_loss += loss.detach()
     return total_loss
 
 
@@ -75,8 +67,11 @@ def train(
     params: TrainingParams,
 ) -> TrainingResult:
     assert params.epochs > 0, params.epochs
+    params.training(name)
     fn_loss = model.fn_loss
     fn_opti = optim.AdamW(model.parameters(), lr=params.lr)
+    workers = 8
+    batch_size = 1024
 
     # Note: cannot pin if already on GPU
     # Note: cannot use workers with pytest
@@ -84,17 +79,17 @@ def train(
     te_saved = isinstance(test_data, TensorDatasetSaved)
     train_dataloader = DataLoader(
         training,
-        batch_size=len(training.x) if tr_saved else 1024,
+        batch_size=len(training.x) if tr_saved else batch_size,
         shuffle=not tr_saved,
-        pin_memory=False,
-        num_workers=0 if tr_saved else 3,
+        pin_memory=not tr_saved,
+        num_workers=0 if tr_saved else workers,
     )
     test_dataloader = DataLoader(
         test_data,
-        batch_size=len(test_data.x) if te_saved else 1024,
+        batch_size=len(test_data.x) if te_saved else batch_size,
         shuffle=False,
-        pin_memory=False,
-        num_workers=0 if te_saved else 3,
+        pin_memory=not te_saved,
+        num_workers=0 if te_saved else workers,
     )
 
     te_losses = []

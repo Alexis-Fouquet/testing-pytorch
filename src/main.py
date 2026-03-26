@@ -1,7 +1,11 @@
 from rich import print
+from rich.live import Live
+
+# import torch
 from tqdm.rich import tqdm
 from lib.build_models.functions_2d import Cos2D, ThreeElements
 from lib.build_models.mnist_simple import MnistSimple
+from lib.device import global_panel
 
 
 if __name__ == "__main__":
@@ -29,6 +33,9 @@ if __name__ == "__main__":
         MnistSimple(epochs=223, layers=[0, 1, 2], lrs=[0.01, 0.001, 0.0003]),
     ]
 
+    # torch.backends.cudnn.benchmark = True
+
     print("Training all")
-    for model in tqdm(models, desc="Models"):
-        model.train()
+    with Live(global_panel, refresh_per_second=1) as live:
+        for model in tqdm(models, desc="Models"):
+            model.train()

@@ -1,8 +1,9 @@
 from pathlib import Path
+from typing import cast
 
 from torch import load, nn, save
 
-from lib.device import global_device
+from lib.device import global_device, global_panel
 
 
 class TrainingParams:
@@ -41,3 +42,17 @@ class TrainingParams:
 
     def get_hparams_dict(self):
         return {"lr": self.lr, "layers": self.layers}
+
+    def already_trained(self, name: str):
+        rend = cast(str, global_panel.renderable)
+        if rend.count("\n") > 15:
+            rend = rend[rend.index("\n") + 1 :]
+        rend += f"> Model {self.get_full_name(name)} already trained\n"
+        global_panel.renderable = rend
+
+    def training(self, name: str):
+        rend = cast(str, global_panel.renderable)
+        if rend.count("\n") > 15:
+            rend = rend[rend.index("\n") + 1 :]
+        rend += f"> Training {self.get_full_name(name)}\n"
+        global_panel.renderable = rend

@@ -1,4 +1,3 @@
-from rich import print
 from torch import Size, cos, rand, sqrt, dstack
 
 from lib.base import train
@@ -83,7 +82,7 @@ class Cos2D(ModelTraining):
         )
 
         if params.save_exist(name):
-            print(f"> Model {params.get_full_name(name)} already trained")
+            params.already_trained(name)
             params.load(name, model)
             return None
         result = train(
@@ -134,7 +133,7 @@ class ThreeElements(ModelTraining):
         )
 
         if params.save_exist(name):
-            print(f"> Model {params.get_full_name(name)} already trained")
+            params.already_trained(name)
             params.load(name, model)
             return None
         result = train(

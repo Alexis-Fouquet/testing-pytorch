@@ -3,7 +3,6 @@ from torch.nn import CrossEntropyLoss
 from torch.utils.data import Dataset
 from torchvision import datasets
 from torchvision.transforms import Compose, ToTensor, Lambda
-from rich import print
 
 from lib.base import train
 from lib.device import global_device
@@ -53,7 +52,7 @@ class MnistSimple(ModelTraining):
 
         (training, test) = get_datasets()
 
-        size = 40
+        size = 512
 
         layers_arg = (
             [
@@ -67,7 +66,7 @@ class MnistSimple(ModelTraining):
         model = SeqModel(layers_arg, global_device, loss=CrossEntropyLoss())
 
         if params.save_exist(name):
-            print(f"> Model {params.get_full_name(name)} already trained")
+            params.already_trained(name)
             params.load(name, model)
             return None
 

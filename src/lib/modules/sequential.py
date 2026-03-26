@@ -1,5 +1,5 @@
-from typing import Any, Mapping
-from torch import Tensor, nn
+from typing import Any, Mapping, cast
+from torch import Tensor, nn, compile
 from lib.modules.base_model import BaseModel
 from torch.nn.modules.loss import _Loss
 
@@ -9,9 +9,7 @@ class SeqModel(BaseModel):
     A neural network (layer) with a sigmoid.
     """
 
-    def __init__(
-        self, models: list[BaseModel], device: str, loss: _Loss | None = None
-    ) -> None:
+    def __init__(self, models: list, device: str, loss: _Loss | None = None) -> None:
         """
         Creates the neural network layer, with the sizes indicated.
         """
@@ -21,6 +19,8 @@ class SeqModel(BaseModel):
         BaseModel.__init__(self, device, internal_loss)
         self.models = models
         self.internal_loss = internal_loss
+        # TODO
+        # self.internal_seq = cast(nn.Module, compile(nn.Sequential(*models).to(device)))
         self.internal_seq = nn.Sequential(*models).to(device)
 
     def load_state_dict(
