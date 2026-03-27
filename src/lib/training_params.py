@@ -7,11 +7,18 @@ from lib.device import global_device, global_panel
 
 
 class TrainingParams:
-    def __init__(self, epochs: int = 1, lr: float = 0.07, layers: int = 0) -> None:
+    def __init__(
+        self,
+        epochs: int = 1,
+        lr: float = 0.07,
+        layers: int = 0,
+        classification: bool = False,
+    ) -> None:
         self.epochs = epochs
         self.lr = lr
         self.layers = layers
         self.path: Path | None = None
+        self.classification = classification
 
     def get_full_name(self, name: str):
         return f"n{name}_e{self.epochs}_lr{self.lr}_la{self.layers}"
@@ -43,16 +50,15 @@ class TrainingParams:
     def get_hparams_dict(self):
         return {"lr": self.lr, "layers": self.layers}
 
-    def already_trained(self, name: str):
+    def log(self, txt: str):
         rend = cast(str, global_panel.renderable)
         if rend.count("\n") > 15:
             rend = rend[rend.index("\n") + 1 :]
-        rend += f"> Model {self.get_full_name(name)} already trained\n"
+        rend += f"| {txt}\n"
         global_panel.renderable = rend
 
+    def already_trained(self, name: str):
+        self.log(f"> Model {self.get_full_name(name)} already trained")
+
     def training(self, name: str):
-        rend = cast(str, global_panel.renderable)
-        if rend.count("\n") > 15:
-            rend = rend[rend.index("\n") + 1 :]
-        rend += f"> Training {self.get_full_name(name)}\n"
-        global_panel.renderable = rend
+        self.log(f"> Training {self.get_full_name(name)}")

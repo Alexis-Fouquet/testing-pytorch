@@ -1,10 +1,9 @@
 from torch import Tensor, inference_mode, manual_seed, optim, zeros
 from torch.nn.modules.loss import _Loss
 from torch.optim import Optimizer
-from torch.utils.data import DataLoader, Dataset
 from tqdm.rich import tqdm
 
-from lib.data.tensor_data import TensorDatasetSaved
+from lib.data_saver.loader import BaseLoader
 from lib.modules.base_model import BaseModel
 from lib.training_params import TrainingParams
 from lib.training_result import TrainingResult
@@ -17,11 +16,14 @@ def seed(seed: int = 42):
 
 def testing(
     model: BaseModel,
-    data: DataLoader,
+    data: BaseLoader,
     fn_loss: _Loss,
-) -> Tensor:
+    classification: bool = False,
+) -> tuple[Tensor, Tensor]:
     with inference_mode():
         total_loss = zeros([1], device=model.device_str)
+        # TODO: fix this for batched models
+        last_accuracy = zeros([1], device=model.device_str)
         for x, y in data:
             x = x.to(model.device_str, non_blocking=True)
             y = y.to(model.device_str, non_blocking=True)
@@ -35,13 +37,17 @@ def testing(
                 y.size(),
             )
             loss: Tensor = fn_loss(out_model, y)
-            total_loss += loss
-        return total_loss
+            total_loss += loss.detach()
+            if classification:
+                last_accuracy = (
+                    out_model.argmax(dim=1) == y
+                ).float().mean().detach() * 100
+        return (total_loss, last_accuracy)
 
 
 def train_step(
     model: BaseModel,
-    data: DataLoader,
+    data: BaseLoader,
     fn_loss: _Loss,
     fn_opti: Optimizer,
 ) -> Tensor:
@@ -61,8 +67,8 @@ def train_step(
 
 def train(
     model: BaseModel,
-    training: Dataset,
-    test_data: Dataset,
+    training: BaseLoader,
+    test_data: BaseLoader,
     name: str,
     params: TrainingParams,
 ) -> TrainingResult:
@@ -70,45 +76,29 @@ def train(
     params.training(name)
     fn_loss = model.fn_loss
     fn_opti = optim.AdamW(model.parameters(), lr=params.lr)
-    workers = 8
-    batch_size = 1024
-
-    # Note: cannot pin if already on GPU
-    # Note: cannot use workers with pytest
-    tr_saved = isinstance(training, TensorDatasetSaved)
-    te_saved = isinstance(test_data, TensorDatasetSaved)
-    train_dataloader = DataLoader(
-        training,
-        batch_size=len(training.x) if tr_saved else batch_size,
-        shuffle=not tr_saved,
-        pin_memory=not tr_saved,
-        num_workers=0 if tr_saved else workers,
-    )
-    test_dataloader = DataLoader(
-        test_data,
-        batch_size=len(test_data.x) if te_saved else batch_size,
-        shuffle=False,
-        pin_memory=not te_saved,
-        num_workers=0 if te_saved else workers,
-    )
 
     te_losses = []
     tr_losses = []
+    te_acc = []
 
     te_loss = Tensor()
     tr_loss = Tensor()
     for i in tqdm(range(params.epochs), desc="Epochs"):
         model.train()
-        tr_loss = train_step(model, train_dataloader, fn_loss, fn_opti)
+        tr_loss = train_step(model, training, fn_loss, fn_opti)
         tr_losses.append(tr_loss)
         if i % 10 == 0:
             model.eval()
-            te_loss = testing(model, test_dataloader, fn_loss)
+            (te_loss, acc) = testing(
+                model, test_data, fn_loss, classification=params.classification
+            )
             te_losses.append(te_loss)
+            if params.classification:
+                te_acc.append(acc)
 
     if (params.epochs - 1) % 10 != 0:
         model.eval()
-        te_loss = testing(model, test_dataloader, fn_loss)
+        (te_loss, _) = testing(model, test_data, fn_loss)
 
     return TrainingResult(
         model,
@@ -118,6 +108,7 @@ def train(
         test_losses=te_losses,
         train_data=training,
         test_data=test_data,
+        accuracy=te_acc,
         hparams=params.get_hparams_dict(),
         params=params,
     )

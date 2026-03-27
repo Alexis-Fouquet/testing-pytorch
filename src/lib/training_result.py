@@ -1,7 +1,7 @@
 from torch import arange, dstack, inference_mode, meshgrid
 from torch._prims_common import Tensor
-from torch.utils.data import Dataset
-from lib.data.tensor_data import TensorDatasetSaved
+from lib.data_saver.loader import BaseLoader
+from lib.data_saver.tensor_loader import DeviceTensorLoader
 from lib.modules.base_model import BaseModel
 from torch.utils.tensorboard import SummaryWriter
 from matplotlib.pyplot import ion, pause, subplots
@@ -24,10 +24,11 @@ class TrainingResult:
         model: BaseModel,
         loss: Tensor,
         name: str,
-        train_data: Dataset,
-        test_data: Dataset,
+        train_data: BaseLoader,
+        test_data: BaseLoader,
         training_losses: list[Tensor],
         test_losses: list[Tensor],
+        accuracy: list[Tensor],
         hparams: dict,
         params: TrainingParams,
     ) -> None:
@@ -36,6 +37,7 @@ class TrainingResult:
         self.loss = loss
         self.training_losses = list_to_float(training_losses)
         self.test_losses = list_to_float(test_losses)
+        self.accuracy = list_to_float(accuracy)
         self.train_data = train_data
         self.test_data = test_data
         self.hparams = hparams
@@ -53,6 +55,9 @@ class TrainingResult:
             writer.add_scalar("loss/training", s, i)
         for i, s in enumerate(self.test_losses):
             writer.add_scalar("loss/test", s, i)
+        if len(self.accuracy) > 0:
+            for i, s in enumerate(self.accuracy):
+                writer.add_scalar("accuracy/test", s, i)
         if plot:
             self.plot(writer=writer, classification=classification)
         writer.add_hparams(
@@ -63,8 +68,8 @@ class TrainingResult:
         writer.close()
 
     def get_fct_figure(self):
-        if not isinstance(self.test_data, TensorDatasetSaved) or not isinstance(
-            self.train_data, TensorDatasetSaved
+        if not isinstance(self.test_data, DeviceTensorLoader) or not isinstance(
+            self.train_data, DeviceTensorLoader
         ):
             return
 
@@ -105,8 +110,8 @@ class TrainingResult:
         return fig
 
     def get_classification_figure(self):
-        if not isinstance(self.test_data, TensorDatasetSaved) or not isinstance(
-            self.train_data, TensorDatasetSaved
+        if not isinstance(self.test_data, DeviceTensorLoader) or not isinstance(
+            self.train_data, DeviceTensorLoader
         ):
             return
 

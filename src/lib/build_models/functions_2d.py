@@ -1,7 +1,7 @@
 from torch import Size, cos, rand, sqrt, dstack
 
 from lib.base import train
-from lib.data.tensor_data import TensorDatasetSaved
+from lib.data_saver.tensor_loader import DeviceTensorLoader
 from lib.device import global_device
 from lib.modules.sequential import SeqModel
 from lib.modules.sigmoid import SigmoidModel
@@ -39,8 +39,8 @@ def circle_2d(epochs: int = 1):
     )
     return train(
         model,
-        TensorDatasetSaved(in_training, out_training),
-        TensorDatasetSaved(in_test, out_test),
+        DeviceTensorLoader(in_training, out_training),
+        DeviceTensorLoader(in_test, out_test),
         "2d_circle",
         TrainingParams(epochs=epochs, lr=0.05),
     )
@@ -83,12 +83,11 @@ class Cos2D(ModelTraining):
 
         if params.save_exist(name):
             params.already_trained(name)
-            params.load(name, model)
             return None
         result = train(
             model,
-            TensorDatasetSaved(in_training, out_training),
-            TensorDatasetSaved(in_test, out_test),
+            DeviceTensorLoader(in_training, out_training),
+            DeviceTensorLoader(in_test, out_test),
             name,
             params,
         )
@@ -134,12 +133,11 @@ class ThreeElements(ModelTraining):
 
         if params.save_exist(name):
             params.already_trained(name)
-            params.load(name, model)
             return None
         result = train(
             model,
-            TensorDatasetSaved(in_training, out_training),
-            TensorDatasetSaved(in_test, out_test),
+            DeviceTensorLoader(in_training, out_training),
+            DeviceTensorLoader(in_test, out_test),
             name,
             params,
         )

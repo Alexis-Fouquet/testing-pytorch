@@ -1,6 +1,6 @@
 from torch import Size, Tensor, bernoulli, concat, ones
 
-from lib.data.tensor_data import TensorDatasetSaved
+from lib.data_saver.tensor_loader import DeviceTensorLoader
 from lib.device import global_device
 from lib.base import train
 from lib.modules.sequential import SeqModel
@@ -37,8 +37,8 @@ def gates_and_2(epochs: int = 1):
     model = SigmoidModel(2, 1, global_device)
     return train(
         model,
-        TensorDatasetSaved(in_training, out_training),
-        TensorDatasetSaved(in_test, out_test),
+        DeviceTensorLoader(in_training, out_training),
+        DeviceTensorLoader(in_test, out_test),
         "and2",
         TrainingParams(epochs=epochs, lr=0.4),
     )
@@ -73,8 +73,8 @@ def gates_and_5(epochs: int = 1):
     model = SigmoidModel(5, 1, global_device)
     return train(
         model,
-        TensorDatasetSaved(in_training, out_training),
-        TensorDatasetSaved(in_test, out_test),
+        DeviceTensorLoader(in_training, out_training),
+        DeviceTensorLoader(in_test, out_test),
         "and4n1",
         TrainingParams(epochs=epochs, lr=0.4),
     )
@@ -109,8 +109,8 @@ def gates_or_5(epochs: int = 1):
     model = SigmoidModel(5, 1, global_device)
     return train(
         model,
-        TensorDatasetSaved(in_training, out_training),
-        TensorDatasetSaved(in_test, out_test),
+        DeviceTensorLoader(in_training, out_training),
+        DeviceTensorLoader(in_test, out_test),
         "or4n1",
         TrainingParams(epochs=epochs, lr=0.4),
     )
@@ -145,8 +145,8 @@ def gates_complex_v1(epochs: int = 1):
     model = SigmoidModel(5, 1, global_device)
     return train(
         model,
-        TensorDatasetSaved(in_training, out_training),
-        TensorDatasetSaved(in_test, out_test),
+        DeviceTensorLoader(in_training, out_training),
+        DeviceTensorLoader(in_test, out_test),
         "gate1",
         TrainingParams(epochs=epochs, lr=0.4),
     )
@@ -190,8 +190,8 @@ def gates_xor(epochs: int = 1):
     )
     return train(
         model,
-        TensorDatasetSaved(in_training, out_training),
-        TensorDatasetSaved(in_test, out_test),
+        DeviceTensorLoader(in_training, out_training),
+        DeviceTensorLoader(in_test, out_test),
         "xor2",
         TrainingParams(epochs=epochs, lr=1.5),
     )

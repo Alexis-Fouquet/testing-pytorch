@@ -5,6 +5,7 @@ from torchvision import datasets
 from torchvision.transforms import Compose, ToTensor, Lambda
 
 from lib.base import train
+from lib.data_saver.tensor_loader import dataset_to_dtl
 from lib.device import global_device
 from lib.modules.sequential import SeqModel
 from lib.modules.sigmoid import SigmoidModel
@@ -50,7 +51,8 @@ class MnistSimple(ModelTraining):
     def internal_train(self, params: TrainingParams) -> TrainingResult | None:
         name = "mnist_simple"
 
-        (training, test) = get_datasets()
+        training, test = get_datasets()
+        training, test = dataset_to_dtl(training), dataset_to_dtl(test)
 
         size = 512
 
@@ -67,7 +69,6 @@ class MnistSimple(ModelTraining):
 
         if params.save_exist(name):
             params.already_trained(name)
-            params.load(name, model)
             return None
 
         result = train(model, training, test, name, params)
