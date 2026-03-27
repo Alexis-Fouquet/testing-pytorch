@@ -4,6 +4,7 @@ from rich.live import Live
 # import torch
 from tqdm.rich import tqdm
 from lib.build_models.functions_2d import Cos2D, ThreeElements
+from lib.build_models.mnist_fashion import MnistFashion
 from lib.build_models.mnist_simple import MnistSimple
 from lib.device import global_panel
 
@@ -23,6 +24,13 @@ if __name__ == "__main__":
             epochs=1000,
             layers=[1, 2, 3],
             lrs=[0.01, 0.001],
+            classification=True,
+            plot=False,
+        ),
+        MnistFashion(
+            epochs=1500,
+            layers=[0, 1, 2, 3, 4],
+            lrs=[0.01, 0.001, 0.0003],
             classification=True,
             plot=False,
         ),
