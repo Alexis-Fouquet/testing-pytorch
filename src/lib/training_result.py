@@ -73,10 +73,10 @@ class TrainingResult:
         ):
             return
 
-        in_test = self.test_data.x
-        out_test = self.test_data.y
-        in_training = self.train_data.x
-        out_training = self.train_data.y
+        in_test = self.test_data.x.cpu()
+        out_test = self.test_data.y.cpu()
+        in_training = self.train_data.x.cpu()
+        out_training = self.train_data.y.cpu()
 
         fig, axes = subplots(1, 2)
         (sub2, sub3) = axes
@@ -115,10 +115,10 @@ class TrainingResult:
         ):
             return
 
-        in_test = self.test_data.x
-        out_test = self.test_data.y
-        in_training = self.train_data.x
-        out_training = self.train_data.y
+        in_test = self.test_data.x.cpu()
+        out_test = self.test_data.y.cpu()
+        in_training = self.train_data.x.cpu()
+        out_training = self.train_data.y.cpu()
 
         fig, axes = subplots(1, 2)
         sub1, sub2 = axes

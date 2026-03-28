@@ -36,9 +36,9 @@ if __name__ == "__main__":
             plot=False,
         ),
         MnistBalanced(
-            epochs=500,
-            layers=[0, 1, 2, 3, 4],
-            lrs=[0.01, 0.001, 0.0003],
+            epochs=1500,
+            layers=[0, 1, 2, 3],
+            lrs=[0.01, 0.001],
             classification=True,
             plot=False,
         ),
